@@ -1,6 +1,6 @@
 {
   "name": "marq-sales",
-  "version": "0.4.0+codex.20260902155522",
+  "version": "0.4.1",
   "description": "Sales workflows for qualifying deals, auditing pipeline hygiene, coaching calls, and personalizing Mutual Action Plans at Marq, plus workflow utilities.",
   "author": {
     "name": "Marq Sales"
@@ -29,10 +29,7 @@
     "defaultPrompt": [
       "Convert this HubSpot MQL deal into an SQO.",
       "Audit my open HubSpot Sales Pipeline and prepare evidence-backed hygiene updates for approval.",
-      "Analyze this sales call with SPICED and give the rep actionable coaching.",
-      "Use $map-personalization to build a personalized MAP for this prospect.",
-      "Use $confirm to restate what I'm trying to accomplish before doing anything.",
-      "Use $workflow-creator to turn my repeatable process into a master skill."
+      "Use $map-personalization to build a personalized MAP for this prospect."
     ],
     "brandColor": "#36DEC3",
     "composerIcon": "./assets/icon.png",
