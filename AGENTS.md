@@ -7,16 +7,16 @@ Dual-compatible plugin marketplace (Claude Code + Codex) for Marq sales skills. 
 No build step. The only test suite:
 
 ```
-python plugins/marq-sales/skills/audit-hubspot-pipeline/scripts/run_tests.py
+python plugins/marq-sales-suite/skills/audit-hubspot-pipeline/scripts/run_tests.py
 ```
 
 Run it after any change under `audit-hubspot-pipeline/scripts/` or to `references/scoring-fixtures.json`.
 
 ## Layout
 
-- `plugins/marq-sales/skills/<name>/` — each skill: `SKILL.md`, `references/`, optional `scripts/` and `agents/openai.yaml` (Codex interface metadata).
+- `plugins/marq-sales-suite/skills/<name>/` — each skill: `SKILL.md`, `references/`, optional `scripts/` and `agents/openai.yaml` (Codex interface metadata).
 - Marketplace manifests: `.claude-plugin/marketplace.json` (Claude Code) and `.agents/plugins/marketplace.json` (Codex).
-- Plugin manifests: `plugins/marq-sales/.claude-plugin/plugin.json` and `plugins/marq-sales/.codex-plugin/plugin.json`. Keep name, description, and version in sync across both when editing either.
+- Plugin manifests: `plugins/marq-sales-suite/.claude-plugin/plugin.json` and `plugins/marq-sales-suite/.codex-plugin/plugin.json`. Keep name, description, and version in sync across both when editing either.
 - `under-construction/` — draft docs, not skill-formatted. Don't load or promote them without adding proper SKILL.md frontmatter.
 
 ## Invariants — do not weaken when editing skills

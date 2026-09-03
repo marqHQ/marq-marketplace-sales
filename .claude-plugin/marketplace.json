@@ -8,8 +8,8 @@
   },
   "plugins": [
     {
-      "name": "marq-sales",
-      "source": "./plugins/marq-sales",
+      "name": "marq-sales-suite",
+      "source": "./plugins/marq-sales-suite",
       "description": "Sales workflows for qualifying deals, auditing pipeline hygiene, coaching calls, and personalizing Mutual Action Plans at Marq."
     }
   ]

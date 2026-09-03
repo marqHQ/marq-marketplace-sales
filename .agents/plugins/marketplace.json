@@ -5,10 +5,10 @@
   },
   "plugins": [
     {
-      "name": "marq-sales",
+      "name": "marq-sales-suite",
       "source": {
         "source": "local",
-        "path": "./plugins/marq-sales"
+        "path": "./plugins/marq-sales-suite"
       },
       "policy": {
         "installation": "AVAILABLE",

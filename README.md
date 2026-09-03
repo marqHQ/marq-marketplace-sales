@@ -1,6 +1,6 @@
 # Marq Sales Plugins
 
-Public plugin marketplace for the Marq sales team. It contains one plugin (`marq-sales`) with six skills, packaged for both Claude Code and Codex.
+Public plugin marketplace for the Marq sales team. It contains one plugin (`marq-sales-suite`) with six skills, packaged for both Claude Code and Codex.
 
 The source is publicly readable for installation and inspection. It remains unlicensed; public availability does not grant permission to copy, modify, or redistribute it.
 
@@ -23,22 +23,22 @@ Connected and authorized as required by the selected workflow: **HubSpot**, **Go
 
 ```
 /plugin marketplace add marqHQ/marq-marketplace-sales
-/plugin install marq-sales@marq-sales-plugins
+/plugin install marq-sales-suite@marq-sales-plugins
 ```
 
 ### Codex
 
 ```bash
 codex plugin marketplace add https://github.com/marqHQ/marq-marketplace-sales
-codex plugin add marq-sales@marq-sales-plugins
+codex plugin add marq-sales-suite@marq-sales-plugins
 ```
 
-Registering the GitHub repository without a pinned ref lets Codex track marketplace updates from its default branch. Audit deployment details, the weekly recurring-task prompt, and pilot acceptance criteria: [deployment.md](plugins/marq-sales/skills/audit-hubspot-pipeline/references/deployment.md).
+Registering the GitHub repository without a pinned ref lets Codex track marketplace updates from its default branch. Audit deployment details, the weekly recurring-task prompt, and pilot acceptance criteria: [deployment.md](plugins/marq-sales-suite/skills/audit-hubspot-pipeline/references/deployment.md).
 
 ## Testing
 
 ```
-python plugins/marq-sales/skills/audit-hubspot-pipeline/scripts/run_tests.py
+python plugins/marq-sales-suite/skills/audit-hubspot-pipeline/scripts/run_tests.py
 ```
 
 Run after any change to the scoring logic or fixtures.
@@ -48,5 +48,5 @@ Run after any change to the scoring logic or fixtures.
 ```
 .claude-plugin/marketplace.json    Claude Code marketplace manifest
 .agents/plugins/marketplace.json   Codex marketplace manifest
-plugins/marq-sales/                The plugin (skills/, both plugin manifests, assets)
+plugins/marq-sales-suite/          The plugin (skills/, both plugin manifests, assets)
 ```
