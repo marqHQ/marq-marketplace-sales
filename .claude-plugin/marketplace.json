@@ -10,7 +10,7 @@
     {
       "name": "marq-sales",
       "source": "./plugins/marq-sales",
-      "description": "Sales workflows for qualifying MQL deals and auditing HubSpot pipeline hygiene at Marq."
+      "description": "Sales workflows for qualifying deals, auditing pipeline hygiene, coaching calls, and personalizing Mutual Action Plans at Marq."
     }
   ]
 }

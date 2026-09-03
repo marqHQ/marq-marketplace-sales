@@ -1,7 +1,7 @@
 {
   "name": "marq-sales",
-  "version": "0.3.0+codex.20260826174320",
-  "description": "Sales workflows for qualifying deals, auditing pipeline hygiene, and coaching calls at Marq, plus utilities for confirming intent and building workflow skills.",
+  "version": "0.4.0+codex.20260902155522",
+  "description": "Sales workflows for qualifying deals, auditing pipeline hygiene, coaching calls, and personalizing Mutual Action Plans at Marq, plus workflow utilities.",
   "author": {
     "name": "Marq Sales"
   },
@@ -13,7 +13,10 @@
     "pipeline",
     "qualification",
     "coaching",
-    "spiced"
+    "spiced",
+    "mutual-action-plan",
+    "personalization",
+    "brandfetch"
   ],
   "skills": "./skills/",
   "interface": {
@@ -27,6 +30,7 @@
       "Convert this HubSpot MQL deal into an SQO.",
       "Audit my open HubSpot Sales Pipeline and prepare evidence-backed hygiene updates for approval.",
       "Analyze this sales call with SPICED and give the rep actionable coaching.",
+      "Use $map-personalization to build a personalized MAP for this prospect.",
       "Use $confirm to restate what I'm trying to accomplish before doing anything.",
       "Use $workflow-creator to turn my repeatable process into a master skill."
     ],

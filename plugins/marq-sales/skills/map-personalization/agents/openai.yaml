@@ -1,0 +1,4 @@
+interface:
+  display_name: "MAP Personalization"
+  short_description: "Build a personalized MAP for a prospect"
+  default_prompt: "Use $map-personalization to build a MAP for <prospect>."
