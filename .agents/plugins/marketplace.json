@@ -1,0 +1,20 @@
+{
+  "name": "marq-sales-plugins",
+  "interface": {
+    "displayName": "Marq Sales Plugins"
+  },
+  "plugins": [
+    {
+      "name": "marq-sales",
+      "source": {
+        "source": "local",
+        "path": "./plugins/marq-sales"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Audit HubSpot Pipeline"
+  short_description: "Audit and repair sales pipeline hygiene"
+  default_prompt: "Use $audit-hubspot-pipeline to audit my open Sales Pipeline and prepare evidence-backed hygiene updates for approval."

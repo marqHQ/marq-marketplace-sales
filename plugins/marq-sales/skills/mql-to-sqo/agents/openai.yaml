@@ -1,0 +1,4 @@
+interface:
+  display_name: "MQL to SQO Skill"
+  short_description: "Qualify MQL deals using HubSpot and Gong evidence"
+  default_prompt: "Use $mql-to-sqo to convert this HubSpot MQL deal into an SQO with Gong-backed qualification fields, requested line items, and a synced amount."

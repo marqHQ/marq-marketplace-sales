@@ -1,0 +1,16 @@
+{
+  "name": "marq-sales-plugins",
+  "owner": {
+    "name": "Marq Sales"
+  },
+  "metadata": {
+    "description": "Sales workflow plugins for the Marq sales team."
+  },
+  "plugins": [
+    {
+      "name": "marq-sales",
+      "source": "./plugins/marq-sales",
+      "description": "Sales workflows for qualifying MQL deals and auditing HubSpot pipeline hygiene at Marq."
+    }
+  ]
+}

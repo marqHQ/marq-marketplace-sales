@@ -1,0 +1,37 @@
+{
+  "name": "marq-sales",
+  "version": "0.3.0+codex.20260826174320",
+  "description": "Sales workflows for qualifying deals, auditing pipeline hygiene, and coaching calls at Marq, plus utilities for confirming intent and building workflow skills.",
+  "author": {
+    "name": "Marq Sales"
+  },
+  "license": "UNLICENSED",
+  "keywords": [
+    "sales",
+    "hubspot",
+    "gong",
+    "pipeline",
+    "qualification",
+    "coaching",
+    "spiced"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Marq Sales",
+    "shortDescription": "AI Skills so you can spend more time practicing your putting",
+    "longDescription": "A collection of AI skills for the daily workflow of a Marq Sales rep",
+    "developerName": "Marq Sales",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Scheduled", "Read", "Write"],
+    "defaultPrompt": [
+      "Convert this HubSpot MQL deal into an SQO.",
+      "Audit my open HubSpot Sales Pipeline and prepare evidence-backed hygiene updates for approval.",
+      "Analyze this sales call with SPICED and give the rep actionable coaching.",
+      "Use $confirm to restate what I'm trying to accomplish before doing anything.",
+      "Use $workflow-creator to turn my repeatable process into a master skill."
+    ],
+    "brandColor": "#36DEC3",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png"
+  }
+}

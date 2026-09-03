@@ -1,0 +1,4 @@
+interface:
+  display_name: "SPICED Call Coach"
+  short_description: "Independent SPICED call analysis and audit"
+  default_prompt: "Use $spiced-call-coach to analyze and independently audit this sales-call transcript, then give the rep actionable coaching."

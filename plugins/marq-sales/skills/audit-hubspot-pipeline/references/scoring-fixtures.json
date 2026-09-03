@@ -1,0 +1,197 @@
+[
+  {
+    "name": "healthy-green",
+    "input": {
+      "audit_date": "2026-08-13",
+      "stage_band": "early",
+      "next_step_date": "2026-08-20",
+      "has_actionable_next_step": true,
+      "weak_next_step": false,
+      "last_activity_at": "2026-08-10T15:00:00Z",
+      "close_date": "2026-09-30",
+      "evidence_status": "aligned",
+      "task_status": "future_matching"
+    },
+    "expected": {"score": 100, "color": "green", "overrides": [], "warnings": []}
+  },
+  {
+    "name": "due-soon-yellow",
+    "input": {
+      "audit_date": "2026-08-13",
+      "stage_band": "middle",
+      "next_step_date": "2026-08-15",
+      "has_actionable_next_step": true,
+      "weak_next_step": false,
+      "last_activity_at": "2026-08-11",
+      "close_date": "2026-09-01",
+      "evidence_status": "aligned",
+      "task_status": "future_matching"
+    },
+    "expected": {"score": 100, "color": "yellow", "overrides": [], "warnings": ["next_step_due_within_three_days"]}
+  },
+  {
+    "name": "missing-next-date-red",
+    "input": {
+      "audit_date": "2026-08-13",
+      "stage_band": "early",
+      "next_step_date": null,
+      "has_actionable_next_step": true,
+      "weak_next_step": false,
+      "last_activity_at": "2026-08-10",
+      "close_date": "2026-09-30",
+      "evidence_status": "aligned",
+      "task_status": "none"
+    },
+    "expected": {"score": 75, "color": "red", "overrides": ["missing_next_step_date"], "warnings": ["no_matching_task_or_meeting"]}
+  },
+  {
+    "name": "expired-next-date-red",
+    "input": {
+      "audit_date": "2026-08-13",
+      "stage_band": "early",
+      "next_step_date": "2026-08-12",
+      "has_actionable_next_step": true,
+      "weak_next_step": false,
+      "last_activity_at": "2026-08-10",
+      "close_date": "2026-09-30",
+      "evidence_status": "aligned",
+      "task_status": "overdue_only"
+    },
+    "expected": {"score": 70, "color": "red", "overrides": ["expired_next_step_date", "overdue_only_action_coverage"], "warnings": []}
+  },
+  {
+    "name": "stage-threshold-yellow",
+    "input": {
+      "audit_date": "2026-08-13",
+      "stage_band": "late",
+      "next_step_date": "2026-08-25",
+      "has_actionable_next_step": true,
+      "weak_next_step": false,
+      "last_activity_at": "2026-08-03",
+      "close_date": "2026-09-30",
+      "evidence_status": "aligned",
+      "task_status": "future_matching"
+    },
+    "expected": {"score": 85, "color": "yellow", "overrides": [], "warnings": ["stage_threshold_inactivity"]}
+  },
+  {
+    "name": "severe-inactivity-red",
+    "input": {
+      "audit_date": "2026-08-13",
+      "stage_band": "late",
+      "next_step_date": "2026-08-25",
+      "has_actionable_next_step": true,
+      "weak_next_step": false,
+      "last_activity_at": "2026-07-20",
+      "close_date": "2026-09-30",
+      "evidence_status": "aligned",
+      "task_status": "future_matching"
+    },
+    "expected": {"score": 70, "color": "red", "overrides": ["severe_inactivity"], "warnings": []}
+  },
+  {
+    "name": "past-close-red",
+    "input": {
+      "audit_date": "2026-08-13",
+      "stage_band": "middle",
+      "next_step_date": "2026-08-20",
+      "has_actionable_next_step": true,
+      "weak_next_step": false,
+      "last_activity_at": "2026-08-10",
+      "close_date": "2026-08-01",
+      "evidence_status": "aligned",
+      "task_status": "future_matching"
+    },
+    "expected": {"score": 100, "color": "red", "overrides": ["past_close_date"], "warnings": []}
+  },
+  {
+    "name": "conflict-red",
+    "input": {
+      "audit_date": "2026-08-13",
+      "stage_band": "early",
+      "next_step_date": "2026-08-20",
+      "has_actionable_next_step": true,
+      "weak_next_step": false,
+      "last_activity_at": "2026-08-10",
+      "close_date": "2026-09-30",
+      "evidence_status": "conflicting",
+      "task_status": "future_matching"
+    },
+    "expected": {"score": 80, "color": "red", "overrides": ["conflicting_evidence"], "warnings": []}
+  },
+  {
+    "name": "no-evidence-yellow",
+    "input": {
+      "audit_date": "2026-08-13",
+      "stage_band": "early",
+      "next_step_date": "2026-08-20",
+      "has_actionable_next_step": true,
+      "weak_next_step": false,
+      "last_activity_at": "2026-08-10",
+      "close_date": "2026-09-30",
+      "evidence_status": "no_evidence",
+      "task_status": "future_matching"
+    },
+    "expected": {"score": 90, "color": "yellow", "overrides": [], "warnings": ["no_corroborating_evidence"]}
+  },
+  {
+    "name": "weak-note-yellow",
+    "input": {
+      "audit_date": "2026-08-13",
+      "stage_band": "early",
+      "next_step_date": "2026-08-20",
+      "has_actionable_next_step": true,
+      "weak_next_step": true,
+      "last_activity_at": "2026-08-10",
+      "close_date": "2026-09-30",
+      "evidence_status": "aligned",
+      "task_status": "future_matching"
+    },
+    "expected": {"score": 100, "color": "yellow", "overrides": [], "warnings": ["weak_next_step_text"]}
+  },
+  {
+    "name": "missing-actionable-text-red",
+    "input": {
+      "audit_date": "2026-08-13",
+      "stage_band": "early",
+      "next_step_date": "2026-08-20",
+      "has_actionable_next_step": false,
+      "weak_next_step": true,
+      "last_activity_at": "2026-08-10",
+      "close_date": "2026-09-30",
+      "evidence_status": "aligned",
+      "task_status": "none"
+    },
+    "expected": {"score": 75, "color": "red", "overrides": ["missing_actionable_next_step"], "warnings": ["no_matching_task_or_meeting"]}
+  },
+  {
+    "name": "missing-activity-red",
+    "input": {
+      "audit_date": "2026-08-13",
+      "stage_band": "early",
+      "next_step_date": "2026-08-20",
+      "has_actionable_next_step": true,
+      "weak_next_step": false,
+      "last_activity_at": null,
+      "close_date": "2026-09-30",
+      "evidence_status": "aligned",
+      "task_status": "future_matching"
+    },
+    "expected": {"score": 70, "color": "red", "overrides": ["missing_or_severely_stale_activity"], "warnings": []}
+  },
+  {
+    "name": "unverified-mixed-yellow",
+    "input": {
+      "audit_date": "2026-08-13",
+      "stage_band": "middle",
+      "next_step_date": "2026-08-20",
+      "has_actionable_next_step": true,
+      "weak_next_step": false,
+      "last_activity_at": "2026-08-10",
+      "close_date": "2026-09-30",
+      "evidence_status": "unverified",
+      "task_status": "mixed"
+    },
+    "expected": {"score": 85, "color": "yellow", "overrides": [], "warnings": ["unverified_evidence", "mixed_task_coverage"]}
+  }
+]
