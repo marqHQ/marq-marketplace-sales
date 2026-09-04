@@ -1,0 +1,12 @@
+interface:
+  display_name: "Plugin Feedback"
+  short_description: "Submit skill feedback for GitHub review"
+  default_prompt: "Use $plugin-feedback to turn my feedback about a Marq Sales skill into a pull request and request the owner's review."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "github"
+      description: "GitHub MCP server"
+      transport: "streamable_http"
+      url: "https://api.githubcopilot.com/mcp/"
