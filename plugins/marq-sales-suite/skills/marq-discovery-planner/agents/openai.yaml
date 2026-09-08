@@ -1,0 +1,4 @@
+interface:
+  display_name: "Marq Discovery Planner"
+  short_description: "Focused pre-call discovery strategy for Marq sellers"
+  default_prompt: "Use $marq-discovery-planner to prepare a concise discovery brief for this deal or account; find the HubSpot record from its name."
