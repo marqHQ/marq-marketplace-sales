@@ -1,0 +1,88 @@
+[
+  {
+    "id": "D1-strong-discovery",
+    "call_type": "discovery",
+    "strength": "strong",
+    "facts": [
+      {"speaker": "customer", "at": "06:12", "text": "Six regional marketers wait two to three days for simple design changes."},
+      {"speaker": "customer", "at": "10:44", "text": "The central design team spends about 18 hours a week on those requests."},
+      {"speaker": "customer", "at": "18:03", "text": "The VP of Marketing approves software and wants a recommendation before October 15."},
+      {"speaker": "customer", "at": "27:31", "text": "I will invite the VP and brand director to a workflow demo on September 10."},
+      {"speaker": "seller", "at": "28:00", "text": "I will send the calendar hold and security overview tomorrow."}
+    ],
+    "must_capture": ["18 hours per week", "October 15", "customer invite commitment", "Marq send commitment"],
+    "must_not_claim": ["VP is economic buyer", "budget is approved"]
+  },
+  {
+    "id": "D2-strong-discovery-relative-date",
+    "call_type": "discovery",
+    "strength": "strong",
+    "call_date": "2026-09-04",
+    "facts": [
+      {"speaker": "customer", "at": "04:10", "text": "Franchisees create local flyers in Canva and compliance reviews every one manually."},
+      {"speaker": "customer", "at": "12:20", "text": "Two campaigns were delayed last quarter, but we have not calculated the revenue effect."},
+      {"speaker": "customer", "at": "22:02", "text": "Let's meet next Tuesday with compliance."}
+    ],
+    "must_capture": ["qualitative delay impact", "quantified impact unknown", "2026-09-08", "original relative-date wording"],
+    "must_not_claim": ["lost revenue amount", "compliance leader is champion"]
+  },
+  {
+    "id": "D3-strong-discovery-crm-conflict",
+    "call_type": "discovery",
+    "strength": "strong",
+    "crm": {"close_date": "2026-09-30", "forecast_category": "Commit"},
+    "facts": [
+      {"speaker": "customer", "at": "08:31", "text": "There is no committed purchase date; procurement planning starts in November."},
+      {"speaker": "customer", "at": "16:11", "text": "Our main criterion is restricting what local teams can change."}
+    ],
+    "must_capture": ["CRM/transcript conflict", "decision criterion"],
+    "must_not_claim": ["September close is customer confirmed", "deal remains Commit without review"]
+  },
+  {
+    "id": "W1-weak-discovery-seller-led",
+    "call_type": "discovery",
+    "strength": "weak",
+    "facts": [
+      {"speaker": "seller", "at": "03:00", "text": "It sounds like brand consistency is costing you a lot of time."},
+      {"speaker": "customer", "at": "03:09", "text": "Maybe. I do not have numbers."},
+      {"speaker": "seller", "at": "17:45", "text": "Your CMO will probably sign off."},
+      {"speaker": "customer", "at": "25:00", "text": "Send me something and I will take a look."}
+    ],
+    "must_capture": ["weak discovery", "impact unknown", "decision authority unknown", "date unknown"],
+    "must_not_claim": ["costly pain confirmed", "CMO is economic buyer", "follow-up meeting agreed"]
+  },
+  {
+    "id": "W2-incomplete-notes-only",
+    "call_type": "discovery",
+    "strength": "weak",
+    "notes": "Interested in templates. Uses Canva. Good call. Demo maybe in two weeks.",
+    "must_capture": ["source is seller notes", "customer evidence unavailable", "demo date unknown"],
+    "must_not_claim": ["Canva is confirmed competition", "demo is committed", "pain is confirmed"]
+  },
+  {
+    "id": "M1-demo",
+    "call_type": "demo",
+    "strength": "later-stage",
+    "facts": [
+      {"speaker": "customer", "at": "14:22", "text": "The locking controls address our brand concern."},
+      {"speaker": "customer", "at": "21:07", "text": "We still need SSO and accessibility reviewed by IT."},
+      {"speaker": "customer", "at": "31:18", "text": "I will introduce IT by Friday."},
+      {"speaker": "seller", "at": "31:42", "text": "I will send the technical documentation today."}
+    ],
+    "must_capture": ["validated brand fit", "SSO and accessibility validation gaps", "two commitments"],
+    "must_not_claim": ["SSO approved", "technical win", "stage advance"]
+  },
+  {
+    "id": "M2-later-stage-commercial",
+    "call_type": "later-stage",
+    "strength": "later-stage",
+    "facts": [
+      {"speaker": "customer", "at": "05:18", "text": "Legal can review next week after security signs off."},
+      {"speaker": "customer", "at": "11:46", "text": "The $42,000 annual price is within the range, but finance has not approved it."},
+      {"speaker": "customer", "at": "20:05", "text": "Send the revised order form by September 7."},
+      {"speaker": "seller", "at": "20:19", "text": "I will send it by end of day September 7."}
+    ],
+    "must_capture": ["legal dependency", "finance approval missing", "$42,000 discussed", "September 7 commitment"],
+    "must_not_claim": ["budget approved", "amount authorized for CRM write", "legal review scheduled on a specific day"]
+  }
+]

@@ -4,13 +4,15 @@ Dual-compatible plugin marketplace (Claude Code + Codex) for Marq sales skills. 
 
 ## Commands
 
-No build step. The only test suite:
+No build step. Run the relevant test suites:
 
 ```
 python plugins/marq-sales-suite/skills/audit-hubspot-pipeline/scripts/run_tests.py
+python3 plugins/marq-sales-suite/skills/marq-deal-acceleration/scripts/run_tests.py
+python3 plugins/marq-sales-suite/skills/marq-post-call-execution/scripts/check_acceptance_fixtures.py
 ```
 
-Run it after any change under `audit-hubspot-pipeline/scripts/` or to `references/scoring-fixtures.json`.
+Run the audit suite after any change under `audit-hubspot-pipeline/scripts/` or to `references/scoring-fixtures.json`. Run the deal-acceleration suite after any change to its momentum scorer, contract, or fixtures. Run the post-call fixture checker after changes to its workflow, evidence model, CRM mapping, or acceptance cases.
 
 ## Layout
 
@@ -28,9 +30,11 @@ Run it after any change under `audit-hubspot-pipeline/scripts/` or to `reference
 - Writes are verified by an independent connector re-read, never by a UI success banner.
 - `hs_next_step` remediation is append-only.
 
-## Scoring (audit-hubspot-pipeline)
+## Scoring
 
 Green/yellow/red scoring is deterministic Python in `scripts/audit_utils.py` — never reproduce it in prose or let a model score heuristically. `references/scoring.md` is the contract; keep it and the code in sync. Fixtures live in `references/scoring-fixtures.json`; add a fixture when adding a scoring rule.
+
+The deal-acceleration skill has its own deterministic customer-momentum classifier in `scripts/momentum_utils.py`. Its contract is `references/momentum-and-evidence.md`; fixtures live in `references/momentum-fixtures.json`. Keep all three synchronized.
 
 ## Definition of done
 

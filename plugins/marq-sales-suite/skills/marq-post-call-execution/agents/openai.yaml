@@ -1,0 +1,4 @@
+interface:
+  display_name: "Marq Post-Call Execution"
+  short_description: "Turn sales calls into evidence-based follow-up"
+  default_prompt: "Use $marq-post-call-execution to analyze this completed sales call, propose CRM updates, and draft the customer follow-up."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Marq Deal Acceleration"
+  short_description: "Evidence-based strategy for one active deal"
+  default_prompt: "Use $marq-deal-acceleration to find this deal from its deal or account name, diagnose it, and recommend the one or two actions most likely to improve its probability of progressing."
