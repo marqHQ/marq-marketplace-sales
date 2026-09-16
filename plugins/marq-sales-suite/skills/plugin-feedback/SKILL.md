@@ -5,8 +5,6 @@ description: Collect actionable feedback about a Marq Sales skill, redact privat
 
 # Submit plugin feedback about a Marq Sales skill
 
-> **Status: under construction.** The intake pipeline this skill hands off to (form, privacy screen, automated review, owner approval) is being stood up. Until the plugin owner announces it is live, package the submission as described below and tell the rep to send the result to Nick Hatch in Slack instead of the form; say clearly that the form may not accept submissions yet.
-
 Turn the rep's experience into a concise feedback record they paste into the contribution form. Submit the feedback itself; do not edit the affected skill, propose implementation code, or present the feedback as an approved product decision. After they submit, the pipeline logs it, opens a Slack thread in the intake channel, screens it for private data, and files it as a public GitHub issue that the plugin owner, Nick Hatch, triages.
 
 Contribution form: https://marqapp.app.n8n.cloud/form/sales-plugin-contribute
