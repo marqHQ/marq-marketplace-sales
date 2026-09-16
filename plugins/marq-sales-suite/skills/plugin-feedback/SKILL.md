@@ -1,13 +1,13 @@
 ---
 name: plugin-feedback
-description: Collect actionable feedback about a Marq Sales skill, redact private context, and hand the rep a ready-to-paste feedback record plus the intake form link. Use when a sales rep wants to report a problem, confusing step, missing behavior, bad output, or improvement idea for a skill in this plugin. No GitHub access is needed.
+description: Collect actionable feedback about a Marq Sales skill, redact private context, and submit the feedback record to the contribution pipeline for them. Use when a sales rep wants to report a problem, confusing step, missing behavior, bad output, or improvement idea for a skill in this plugin. No GitHub access is needed.
 ---
 
 # Submit plugin feedback about a Marq Sales skill
 
-Turn the rep's experience into a concise feedback record they paste into the contribution form. Submit the feedback itself; do not edit the affected skill, propose implementation code, or present the feedback as an approved product decision. After they submit, the pipeline logs it, opens a Slack thread in the intake channel, screens it for private data, and files it as a public GitHub issue that the plugin owner, Nick Hatch, triages.
+Turn the rep's experience into a concise feedback record you submit for them. Submit the feedback itself; do not edit the affected skill, propose implementation code, or present the feedback as an approved product decision. After they submit, the pipeline logs it, opens a Slack thread in the intake channel, screens it for private data, and files it as a public GitHub issue that the plugin owner, Nick Hatch, triages.
 
-Contribution form: https://marqapp.app.n8n.cloud/form/sales-plugin-contribute
+You submit by posting to the pipeline endpoint from the terminal. The rep does not open a browser or fill in a form. See [references/submitting.md](references/submitting.md) for the endpoint, the payload, the exact command, and the stopping conditions.
 
 The destination repository is public. Never put customer names, contact details, deal data, call transcripts, private URLs, credentials, or tokens in the record. Summarize or redact private context while preserving what the skill owner needs to understand the problem.
 
@@ -32,16 +32,22 @@ Read [references/submission-template.md](references/submission-template.md) befo
 
 Fill the template from the reference completely, omitting optional sections that would be empty. Write a one-line summary that fits in a Slack message and starts with the skill name's effect, for example `SPICED table missing on calls over 30 minutes`.
 
-## Hand off
+## Confirm, then submit
 
-Show the rep, in this order:
+The pipeline files feedback as a public GitHub issue, so a named human must attest that the record is clean before it leaves the machine. That attestation used to be a checkbox on a form. Now it is the rep saying yes to you, and you may not supply it on their behalf.
 
-1. The complete record in one copyable block.
-2. The form link and the values to enter: Submission type `Feedback about an existing skill`, their name and Marq email, Skill set to the skill folder name, Summary as the one-line summary, Submission as the record, and the privacy checkbox.
-3. What happens next: the intake Slack thread, the GitHub issue link posted there, and the owner's triage.
+1. Show the rep the complete record and tell them plainly what you redacted.
+2. Ask them to confirm two things in one answer: that the record is what they want submitted, and that it contains no customer names, deal data, call transcripts, private links, or credentials.
+3. Only after they confirm both, post the submission as described in [references/submitting.md](references/submitting.md), with `submission_type` set to `Feedback about an existing skill` and `skill` set to the skill's folder name.
+4. Never alter the record after they confirm it. If anything needs to change, show the new record and ask again.
+5. Report the HTTP status, then tell them to watch for the pipeline's Slack DM, which carries the tracking link and is the real receipt.
 
-Submit on the rep's behalf only when a browser tool is available, the rep asks you to, and they have confirmed the exact record. Never alter the record after confirmation.
+If a stopping condition in the submitting reference applies, give them the form link and the field values instead, and say why you could not post it for them.
+
+## What happens next
+
+Tell the rep where to watch: the intake Slack thread, the GitHub issue link posted there, and the owner's triage.
 
 ## Completion report
 
-Return the affected skill, the category, what was redacted, the form link, and whether the rep submitted it or still needs to.
+Return the affected skill, the category, what was redacted, whether the rep confirmed the privacy attestation, the HTTP status of the submission, and whether it was submitted or is waiting on a stopping condition.
