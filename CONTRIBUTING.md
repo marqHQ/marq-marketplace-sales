@@ -7,7 +7,7 @@ Sales reps contribute without touching GitHub. The pipeline has three stages, ea
 - **Feedback about an existing skill:** run `plugin-feedback` in ChatGPT or Codex. It interviews you, redacts customer data, and hands you a filled-in form link.
 - **A new skill:** run `upload-new-skill`. It normalizes your draft into a single text bundle and hands you the form link. Skills are text, so nothing is zipped or uploaded.
 
-Both go to one intake form. n8n logs the submission, opens a Slack thread in the intake channel, and files a GitHub Issue on your behalf. You never need a GitHub account.
+Both go to the same intake form: <https://marqapp.app.n8n.cloud/form/sales-plugin-contribute>. One n8n workflow logs the submission to the ledger, DMs you in Slack, screens the text for private data, and files a GitHub issue on your behalf. You never need a GitHub account, and every later update arrives as a reply in that same Slack DM thread.
 
 ## 2. Review
 
@@ -16,13 +16,15 @@ Both go to one intake form. n8n logs the submission, opens a Slack thread in the
   1. `unpack_submission.py` rejects unsafe paths, disallowed file types, secrets, name collisions, and oversize bundles. Deterministic, no model involved. Failures are commented on the issue and the label flips to `needs-changes`.
   2. Claude, running the [`review-submission`](.claude/skills/review-submission/SKILL.md) skill, applies the [review checklist](.claude/skills/review-submission/references/review-checklist.md), fixes packaging, integrates the skill, and writes a report. It has no git or GitHub tools.
   3. `verify_repo.py` reruns the test suites and validators and checks manifests and README. Its results go in the pull-request body whether they pass or fail.
-  4. A plain shell step commits to `claude/skill-proposal-<issue>-<skill>`, opens or updates the pull request, comments on the issue, and notifies n8n.
+  4. A plain shell step commits to `claude/skill-proposal-<issue>-<skill>`, opens or updates the pull request, comments on the issue, and posts the outcome to the n8n webhook (`N8N_REVIEW_WEBHOOK`, authenticated with `N8N_REVIEW_SECRET`).
 
 To change the review criteria, edit the checklist file. The workflow reads it on every run.
 
 ## 3. Approve and ship
 
-n8n sends the plugin owner one Slack message with the report summary, the pull-request link, and Approve / Request changes / Reject. Approve merges the pull request. Request changes posts the note to the issue and re-runs the review. Nothing merges automatically, and nothing pushes to `main` except a merged pull request.
+The whole pipeline is one n8n workflow, *Sales plugin contribution pipeline*, so there is a single place to watch it run.
+
+The same workflow receives that outcome and sends the plugin owner one Slack DM with the verdict, the deterministic check results, and the pull-request link. He picks Approve and merge, Request changes, or Reject in a short form. Approve merges the pull request through the GitHub API. Request changes posts his notes to the issue and re-runs the review. Reject closes both. Nothing merges automatically, nothing pushes to `main` except a merged pull request, and the submitter is told the outcome either way.
 
 A merge to `main` triggers the private mirror sync and is picked up by the ChatGPT workspace's daily marketplace sync.
 
