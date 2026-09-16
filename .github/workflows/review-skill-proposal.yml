@@ -132,7 +132,9 @@ jobs:
           if [ "$changed" = true ]; then
             git commit -q -m "feat(${SKILL}): add ${SKILL} skill (#${ISSUE})" \
               -m "Automated review of skill proposal #${ISSUE}. The review report and verification results are in the pull request body."
-            git push -f origin "$branch"
+            # The Claude action swaps git credentials for its App token and its cleanup step removes the
+            # checkout token from git config, so push with an explicit token URL instead of the remote.
+            git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:refs/heads/${branch}"
             {
               echo "Automated review of skill proposal #${ISSUE}. Closes #${ISSUE} on merge."
               echo
