@@ -1,13 +1,13 @@
 ---
 name: upload-new-skill
-description: Package a completely new skill a sales rep has drafted into the Marq Sales plugin's submission bundle and hand them the intake form link. Use when a sales rep uploads, pastes, or describes a new reusable skill they want added to the shared plugin. Do not use for changes or feedback about an existing skill; that is plugin-feedback. No GitHub access is needed.
+description: Package a completely new skill a sales rep has drafted into the Marq Sales plugin's submission bundle and submit it to the contribution pipeline for them. Use when a sales rep uploads, pastes, or describes a new reusable skill they want added to the shared plugin. Do not use for changes or feedback about an existing skill; that is plugin-feedback. No GitHub access is needed.
 ---
 
 # Upload a new skill to the shared plugin
 
-Turn a rep's draft into one text bundle they paste into the contribution form. You never touch GitHub. After they submit, the pipeline logs the submission, opens a Slack thread in the intake channel, screens it for private data, files a public GitHub issue, runs an automated review that opens a pull request, and asks the plugin owner, Nick Hatch, to approve in Slack.
+Turn a rep's draft into one text bundle and submit it to the contribution pipeline on their behalf. You never touch GitHub. After submission, the pipeline logs it, opens a Slack thread in the intake channel, screens it for private data, files a public GitHub issue, runs an automated review that opens a pull request, and asks the plugin owner, Nick Hatch, to approve in Slack.
 
-Contribution form: https://marqapp.app.n8n.cloud/form/sales-plugin-contribute
+You submit by posting to the pipeline endpoint from the terminal. The rep does not open a browser or fill in a form. See [references/submitting.md](references/submitting.md) for the endpoint, the fields, the exact command, and the stopping conditions.
 
 The destination repository, `marqHQ/marq-marketplace-sales`, is public. Never include customer names, contact details, deal or call data, private URLs, credentials, tokens, or internal-only documents. Redact or generalize private examples while preserving the workflow's meaning, and tell the rep what you changed.
 
@@ -25,6 +25,7 @@ Read [references/submission-contract.md](references/submission-contract.md) befo
    - Any external write, notification, deletion, or approval behavior
    - Evidence that the workflow is useful and repeatable
 5. Establish the skill name using lowercase letters, digits, and hyphens. Confirm it with the rep if it differs from what they supplied. If you can read the public repository, check `plugins/marq-sales-suite/skills/` for an existing skill with the same or a near-identical name; if you cannot, proceed, because the intake check rejects collisions and tells the rep to use plugin-feedback instead.
+6. Get the rep's name and Marq email. The email is how the pipeline DMs them every status change, so confirm it rather than guessing from context.
 
 ## Normalize
 
@@ -46,16 +47,24 @@ Read [references/submission-contract.md](references/submission-contract.md) befo
 
 Render exactly one bundle in the format defined in the bundle-format reference: a frontmatter block, a plain-language description, then one `--- file: <path> ---` block per file, nothing after the last file. Keep it under 60,000 characters.
 
-## Hand off
+Write the finished bundle to a UTF-8 file and keep that path. The bundle is posted as a field inside a JSON payload, never pasted onto a command line.
 
-Show the rep, in this order:
+## Confirm, then submit
 
-1. The complete bundle in one copyable block. Do not wrap the whole bundle in a code fence when they paste it; one fence around an individual file's content is tolerated.
-2. The form link and the values to enter: Submission type `New skill proposal`, their name and Marq email, Skill set to the skill name, Summary as one line, Submission as the bundle, and the privacy checkbox.
-3. What happens next and where to watch: the intake Slack thread, the GitHub issue link posted there, the automated review, and the owner's approval decision.
+The pipeline publishes to a public repository, so a named human must attest that the submission is clean before it leaves the machine. That attestation used to be a checkbox on a form. Now it is the rep saying yes to you, and you may not supply it on their behalf.
 
-Submit on the rep's behalf only when a browser tool is available, the rep asks you to, and they have confirmed the exact bundle. Never alter the bundle after confirmation.
+1. Show the rep the complete bundle and tell them plainly what you redacted, excluded, or could not test.
+2. Ask them to confirm two things in one answer: that the bundle is what they want submitted, and that it contains no customer names, deal data, private links, or credentials.
+3. Only after they confirm both, post the submission as described in [references/submitting.md](references/submitting.md), with `submission_type` set to `New skill proposal`.
+4. Never alter the bundle after they confirm it. If anything needs to change, show the new bundle and ask again.
+5. Report the HTTP status, then tell them to watch for the pipeline's Slack DM, which arrives within about a minute and carries the tracking link. Explain that the DM, not the HTTP status, is the real receipt.
+
+If a stopping condition in the submitting reference applies, give them the form link and the field values instead, and say why you could not post it for them.
+
+## What happens next
+
+Tell the rep where to watch: the intake Slack thread, the GitHub issue link posted there, the automated review, and the owner's approval decision. Every stage DMs them.
 
 ## Completion report
 
-Return the skill name, the files included, what you redacted or excluded, anything untested, the form link, and whether the rep submitted it or still needs to.
+Return the skill name, the files included, what you redacted or excluded, anything untested, whether the rep confirmed the privacy attestation, the HTTP status of the submission, and whether it was submitted or is waiting on a stopping condition.
