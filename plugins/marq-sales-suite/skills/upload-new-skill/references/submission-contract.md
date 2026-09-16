@@ -1,6 +1,6 @@
 # New-skill submission contract
 
-Use this contract to review every proposed skill before preparing a GitHub write.
+Use this contract to review every proposed skill before rendering the submission bundle. The same rules are applied again by the automated reviewer in the repository, so meeting them here is what gets a proposal approved quickly.
 
 ## Package contract
 
@@ -47,9 +47,9 @@ If deterministic scoring is added or changed, the implementation must use code r
 - ChatGPT skill invocation uses `@<skill-name>`; Codex invocation uses `$<skill-name>`.
 - Preserve existing plugin-manifest limits and keep both plugin manifests synchronized.
 
-## Reviewer-decision summary
+## What the automated review and the owner decide
 
-The pull request must make these decisions easy for the owner to evaluate:
+The bundle's description section should make these questions easy to answer, because they are exactly what the reviewer and the plugin owner evaluate:
 
 - Is this genuinely new rather than a modification of an existing skill?
 - Is the use case frequent and specific enough to justify shared installation?

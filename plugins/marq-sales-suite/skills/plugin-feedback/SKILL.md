@@ -1,82 +1,47 @@
 ---
 name: plugin-feedback
-description: Collect actionable feedback about another Marq Sales skill, preserve relevant conversation context, and—with the user's approval—submit a sanitized feedback record as a branch and pull request to marqHQ/marq-marketplace-sales and request review from the plugin owner. Use when a sales rep wants to report a problem, confusing step, missing behavior, bad output, or improvement idea for a skill in this plugin.
+description: Collect actionable feedback about a Marq Sales skill, redact private context, and hand the rep a ready-to-paste feedback record plus the intake form link. Use when a sales rep wants to report a problem, confusing step, missing behavior, bad output, or improvement idea for a skill in this plugin. No GitHub access is needed.
 ---
 
 # Submit plugin feedback about a Marq Sales skill
 
-Turn the rep's experience into a concise, reviewable feedback record. Submit the feedback itself; do not edit the affected skill, propose implementation code, merge the pull request, or represent the feedback as an approved product decision.
+Turn the rep's experience into a concise feedback record they paste into the contribution form. Submit the feedback itself; do not edit the affected skill, propose implementation code, or present the feedback as an approved product decision. After they submit, the pipeline logs it, opens a Slack thread in the intake channel, screens it for private data, and files it as a public GitHub issue that the plugin owner, Nick Hatch, triages.
 
-The target repository, `marqHQ/marq-marketplace-sales`, is public. Never put customer names, contact details, deal data, call transcripts, private URLs, credentials, tokens, or other confidential information in the branch, commit, or pull request. Summarize or redact private context while preserving what the skill owner needs to understand the problem.
+Contribution form: https://marqapp.app.n8n.cloud/form/sales-plugin-contribute
 
-Read [references/submission-template.md](references/submission-template.md) before preparing the submission.
+The destination repository is public. Never put customer names, contact details, deal data, call transcripts, private URLs, credentials, or tokens in the record. Summarize or redact private context while preserving what the skill owner needs to understand the problem.
 
-## Required capabilities
-
-Use an authenticated GitHub connector that can create branches, files, commits, pull requests, and review requests. In a local coding environment, authenticated `git` and GitHub CLI commands are an acceptable equivalent.
-
-The feedback owner is Nick Hatch, GitHub user `@Nhatch11`. Confirm that this account still has access to the repository before preparing the submission. If GitHub write or review-request capability is unavailable, explain the missing prerequisite and stop before creating the branch. Do not substitute an untracked chat summary or claim the workflow completed.
+Read [references/submission-template.md](references/submission-template.md) before rendering the record.
 
 ## Intake
 
-1. Inspect the current conversation before asking questions. Identify the skill most recently used and the relevant step, inputs, outputs, errors, and corrections already supplied by the rep.
-2. Propose the affected skill when the conversation supports one exact match. Ask the rep to confirm it; otherwise ask which installed Marq Sales skill the feedback concerns.
-3. Gather only missing information needed to answer:
+1. Inspect the current conversation before asking questions. Identify the skill most recently used and the relevant step, inputs, outputs, errors, and corrections the rep already supplied.
+2. Propose the affected skill when the conversation supports one exact match and ask the rep to confirm it; otherwise ask which installed Marq Sales skill the feedback concerns. Use the skill's folder name, for example `spiced-call-coach`.
+3. Gather only the missing information needed to answer:
    - What happened?
    - What should have happened instead?
    - Why does the difference matter to a rep, customer, or workflow?
    - What steps, inputs, or conditions reproduce it?
    - Is there a suggested direction, if the rep has one?
-4. Ask one focused question at a time. Do not force the rep to repeat facts that are already clear from the conversation. Suggested direction, evidence, and reproducibility are useful but not required when the issue is already actionable.
+4. Ask one focused question at a time. Do not force the rep to repeat facts that are already clear. Suggested direction, evidence, and reproducibility are useful but not required when the issue is already actionable.
 5. Classify the feedback as one of: `incorrect-behavior`, `missing-step`, `unclear-instruction`, `tool-failure`, `output-quality`, `workflow-friction`, `permissions-or-security`, or `enhancement`.
-6. Preserve uncertainty. Clearly distinguish what the rep observed from the agent's inference. Do not invent a root cause.
-7. Detect sensitive content before submission. Replace it with neutral descriptions such as `[customer]`, `[deal]`, or `[private link omitted]`. Tell the rep what was redacted.
+6. Preserve uncertainty. Distinguish what the rep observed from what you infer. Do not invent a root cause.
+7. Redact sensitive content before rendering. Replace it with neutral descriptions such as `[customer]`, `[deal]`, `[amount]`, or `[private link omitted]`. Tell the rep what was redacted. The pipeline runs its own privacy screen and holds anything it flags for the owner, so do not rely on it to catch what you can see.
 
-## Prepare the submission
+## Render the record
 
-1. Discover the repository's current default branch and head SHA through GitHub. Do not assume a stale base.
-2. Confirm that the affected skill exists under `plugins/marq-sales-suite/skills/<skill-name>/`. Stop if the name is ambiguous or the skill is not in this plugin.
-3. Create a UTC timestamp and a short lowercase slug from the feedback summary.
-4. Prepare these exact artifacts without writing them yet:
-   - Branch: `feedback/<skill-name>/<YYYYMMDD>-<slug>`.
-   - File: `feedback/<YYYY-MM-DD>-<skill-name>-<slug>.md`.
-   - If either name already exists, add the same short unique suffix to both the branch and file name.
-   - Commit: `feedback(<skill-name>): <concise summary>`.
-   - Pull-request title: the same text as the commit.
-   - Pull-request body: a short purpose statement, affected skill path, privacy confirmation, and `Submitted via $plugin-feedback`.
-   - Reviewer: GitHub user `@Nhatch11`.
-5. Render the feedback file using the reference template. Include only sanitized evidence and context.
+Fill the template from the reference completely, omitting optional sections that would be empty. Write a one-line summary that fits in a Slack message and starts with the skill name's effect, for example `SPICED table missing on calls over 30 minutes`.
 
-## Approval boundary
+## Hand off
 
-Show one consolidated preview containing:
+Show the rep, in this order:
 
-| Action | Destination | Exact proposed content |
-|---|---|---|
-| Create branch and commit | Repository, base branch, branch, file path | Commit message and complete feedback file |
-| Open pull request | Repository and base branch | PR title and body |
-| Request review | GitHub user `@Nhatch11` | Pull-request review request |
+1. The complete record in one copyable block.
+2. The form link and the values to enter: Submission type `Feedback about an existing skill`, their name and Marq email, Skill set to the skill folder name, Summary as the one-line summary, Submission as the record, and the privacy checkbox.
+3. What happens next: the intake Slack thread, the GitHub issue link posted there, and the owner's triage.
 
-State that approval will create externally visible GitHub artifacts and notify `@Nhatch11` through a pull-request review request. Require the rep to approve this exact package before any write. Approval of an earlier draft or materially different package is insufficient. If anything changes after approval, show the revised package and ask again.
-
-## Submit and verify
-
-After approval:
-
-1. Create the branch from the discovered default-branch head.
-2. Create only the proposed feedback file and commit. Do not modify the affected skill or unrelated repository files.
-3. Open the pull request against the discovered default branch. Do not enable auto-merge or merge it.
-4. Request review from `@Nhatch11`. Use the pull-request creation call's reviewer field when supported; otherwise create the review request immediately after the pull request.
-5. Re-read the pull request through GitHub and verify its repository, base, head branch, title, body, open state, changed-file count, exact changed path, public URL, and that `Nhatch11` appears in the requested reviewers. A UI success message is not verification.
-
-Retry a failed GitHub write at most once when the retry is identical and remains within the approved package. Otherwise stop and report the exact partial state. Never create a second pull request to hide or recover from an uncertain first attempt.
+Submit on the rep's behalf only when a browser tool is available, the rep asks you to, and they have confirmed the exact record. Never alter the record after confirmation.
 
 ## Completion report
 
-Return:
-
-- A link to the verified pull request
-- The affected skill and feedback category
-- Confirmation that the PR changes only the feedback file
-- Confirmation that GitHub requested review from Nick Hatch (`@Nhatch11`), or the exact notification failure
-- Any remaining manual action
+Return the affected skill, the category, what was redacted, the form link, and whether the rep submitted it or still needs to.
