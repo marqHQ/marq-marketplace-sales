@@ -1,17 +1,10 @@
 # Plugin skill feedback record
 
-Use this structure for the feedback file. Omit optional sections that would be empty. Keep the submission concise and useful to the skill owner.
+Use this structure for the record the rep pastes into the contribution form. Omit optional sections that would be empty. Keep it concise and useful to the skill owner. The pipeline wraps the record with the skill name, submitter, and timestamp, so do not repeat those.
 
 ```markdown
----
-submitted_at_utc: "<YYYY-MM-DDTHH:MM:SSZ>"
-submitted_by: "<verified name or not provided>"
-affected_skill: "<skill-name>"
-category: "<category>"
-status: "new"
----
-
-# <Concise feedback summary>
+**Category:** <incorrect-behavior | missing-step | unclear-instruction | tool-failure | output-quality | workflow-friction | permissions-or-security | enhancement>
+**Platform:** <ChatGPT | Codex | Claude Code> · **Skill version, if known:** <plugin version or "unknown">
 
 ## Observed behavior
 
@@ -23,11 +16,11 @@ status: "new"
 
 ## Impact
 
-<Why the difference matters.>
+<Why the difference matters to a rep, customer, or workflow.>
 
 ## Reproduction context
 
-<Sanitized steps, inputs, conditions, or environment details. Do not include private links or customer data.>
+<Sanitized steps, inputs, conditions, or environment details. No private links or customer data.>
 
 ## Suggested direction
 
@@ -35,7 +28,9 @@ status: "new"
 
 ## Evidence and uncertainty
 
-<Optional sanitized evidence plus any unresolved facts or agent inferences.>
-```
+<Optional. Sanitized evidence plus unresolved facts, and which statements are the agent's inference rather than the rep's observation.>
 
-For `submitted_by`, use an authenticated profile name only when a connected tool exposes it reliably. Otherwise ask what name the rep wants attached, or use `not provided` if they prefer not to include one.
+## Redactions
+
+<What was replaced with placeholders, so the owner knows what is missing.>
+```

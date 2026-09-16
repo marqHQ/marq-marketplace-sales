@@ -1,12 +1,4 @@
 interface:
   display_name: "Upload New Skill"
-  short_description: "Submit a new skill to the shared plugin"
-  default_prompt: "Use $upload-new-skill to inspect and submit this new skill to the shared Marq Sales plugin for review."
-
-dependencies:
-  tools:
-    - type: "mcp"
-      value: "github"
-      description: "GitHub MCP server"
-      transport: "streamable_http"
-      url: "https://api.githubcopilot.com/mcp/"
+  short_description: "Package a new skill for the shared plugin's intake form"
+  default_prompt: "Use $upload-new-skill to package this new skill into a submission bundle for the shared Marq Sales plugin and give me the intake form link."
