@@ -175,10 +175,11 @@ jobs:
               verification:$verify, pr_url:(if $pr=="" then null else $pr end), branch:$branch}' \
             > .intake/outcome.json
 
+      # The shared secret is the unguessable suffix of N8N_REVIEW_WEBHOOK itself, so no
+      # auth header is sent. Do not enable n8n's `ignoreBots` on that webhook: it rejects
+      # curl with a 403 whose body reads like an auth failure.
       - name: Notify n8n
         if: always() && env.N8N_REVIEW_WEBHOOK != ''
-        env:
-          N8N_REVIEW_SECRET: ${{ secrets.N8N_REVIEW_SECRET }}
         run: |
           set -euo pipefail
           [ -f .intake/outcome.json ] || jq -n --arg issue "$ISSUE" --arg repo "$GITHUB_REPOSITORY" \
@@ -186,4 +187,4 @@ jobs:
           jq --arg run "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" '. + {run_url:$run}' \
             .intake/outcome.json > .intake/payload.json
           curl -fsS -X POST "$N8N_REVIEW_WEBHOOK" -H 'content-type: application/json' \
-            -H "x-review-secret: ${N8N_REVIEW_SECRET:-}" --data @.intake/payload.json
+            --data @.intake/payload.json
