@@ -10,6 +10,7 @@ No build step. Run the relevant test suites:
 python plugins/marq-sales-suite/skills/audit-hubspot-pipeline/scripts/run_tests.py
 python3 plugins/marq-sales-suite/skills/marq-deal-acceleration/scripts/run_tests.py
 python3 plugins/marq-sales-suite/skills/marq-post-call-execution/scripts/check_acceptance_fixtures.py
+python3 .claude/skills/review-submission/scripts/test_unpack_submission.py
 ```
 
 Run the audit suite after any change under `audit-hubspot-pipeline/scripts/` or to `references/scoring-fixtures.json`. Run the deal-acceleration suite after any change to its momentum scorer, contract, or fixtures. Run the post-call fixture checker after changes to its workflow, evidence model, CRM mapping, or acceptance cases.
@@ -20,6 +21,7 @@ Run the audit suite after any change under `audit-hubspot-pipeline/scripts/` or 
 - Marketplace manifests: `.claude-plugin/marketplace.json` (Claude Code) and `.agents/plugins/marketplace.json` (Codex).
 - Plugin manifests: `plugins/marq-sales-suite/.claude-plugin/plugin.json` and `plugins/marq-sales-suite/.codex-plugin/plugin.json`. Keep name, description, and version in sync across both when editing either.
 - `under-construction/` — draft docs, not skill-formatted. Don't load or promote them without adding proper SKILL.md frontmatter.
+- `.claude/skills/review-submission/` — owner-side review skill run by `.github/workflows/review-skill-proposal.yml`, plus the deterministic `unpack_submission.py` and `verify_repo.py` scripts. Not part of the shipped plugin. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full intake → review → approval pipeline.
 
 ## Invariants — do not weaken when editing skills
 

@@ -20,6 +20,10 @@ The source is publicly readable for installation and inspection. It remains unli
 
 Connected and authorized as required by the selected workflow: **HubSpot**, **Gong**, **Google Calendar**, **Brandfetch**, **Marq**, **Marq Analytics**, and **GitHub**. The discovery planner and post-call execution workflows require HubSpot access when CRM context is requested; post-call execution also requires a transcript or substantive notes. The marq-deal-acceleration skill requires HubSpot deal access, uses Gong when matched calls are available, and requires Python to run its deterministic momentum classifier. The mql-to-sqo skill also needs a browser tool signed into the HubSpot portal for line-item rebuilds. The plugin-feedback and upload-new-skill workflows require GitHub permission to create a branch and pull request in `marqHQ/marq-marketplace-sales` and request review from `@Nhatch11`.
 
+## Contributing
+
+Reps submit feedback and new skills through an intake form; a GitHub Actions review opens a pull request and the plugin owner approves from Slack. Nobody needs a GitHub account. Details in [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Install
 
 ### Claude Code

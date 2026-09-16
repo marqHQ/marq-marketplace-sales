@@ -1,0 +1,187 @@
+name: Review skill proposal
+
+# Contribution pipeline, stage 2 (see CONTRIBUTING.md).
+#
+# n8n files a rep's skill proposal as an Issue labeled `skill-proposal`. This
+# workflow unpacks the bundle with deterministic checks, lets Claude review and
+# normalize it against the review checklist, verifies the result with the
+# repo's own validators and test suites, opens or updates a pull request, and
+# notifies n8n so the plugin owner gets a Slack approval prompt.
+#
+# Nothing here merges. The model never holds git or GitHub tools; every
+# repository write below is a plain shell step you can read.
+
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number of the skill proposal to review again
+        required: true
+        type: number
+
+concurrency:
+  group: review-skill-proposal-${{ github.event.issue.number || inputs.issue_number }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+env:
+  ISSUE: ${{ github.event.issue.number || inputs.issue_number }}
+  SKILLS_DIR: plugins/marq-sales-suite/skills
+  N8N_REVIEW_WEBHOOK: ${{ secrets.N8N_REVIEW_WEBHOOK }}
+
+jobs:
+  review:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'skill-proposal'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch and unpack the submission
+        id: unpack
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p .intake
+          gh issue view "$ISSUE" --json number,title,body,author,labels,url > .intake/issue.json
+          jq -r '.body // ""' .intake/issue.json > .intake/submission.md
+          set +e
+          python3 .claude/skills/review-submission/scripts/unpack_submission.py \
+            .intake/submission.md --out .intake/unpacked --install-to "$SKILLS_DIR" \
+            --report .intake/unpack-report.json
+          rc=$?
+          set -e
+          [ "$rc" -ne 1 ] || { echo "::error::bundle could not be parsed"; exit 1; }
+          if [ "$rc" -eq 0 ]; then echo "ok=true" >> "$GITHUB_OUTPUT"; else echo "ok=false" >> "$GITHUB_OUTPUT"; fi
+          echo "skill_name=$(jq -r '.skill_name // ""' .intake/unpack-report.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Reject on blocking errors
+        if: steps.unpack.outputs.ok != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          {
+            echo "### Automated intake check: needs changes"
+            echo
+            echo "The submission could not be accepted as packaged. Fix the items below and resubmit through the form."
+            echo
+            jq -r '.errors[] | "- ❌ " + .' .intake/unpack-report.json
+            jq -r '.warnings[] | "- ⚠️ " + .' .intake/unpack-report.json
+          } > .intake/reject.md
+          gh issue comment "$ISSUE" --body-file .intake/reject.md
+          gh issue edit "$ISSUE" --add-label needs-changes --remove-label skill-proposal || true
+          jq -n --arg issue "$ISSUE" --arg repo "$GITHUB_REPOSITORY" --slurpfile r .intake/unpack-report.json \
+            '{event:"skill-proposal-reviewed", repo:$repo, issue:($issue|tonumber), skill_name:$r[0].skill_name,
+              verdict:"needs-changes", verification:"skipped", pr_url:null, errors:$r[0].errors, warnings:$r[0].warnings}' \
+            > .intake/outcome.json
+
+      - name: Review with Claude
+        if: steps.unpack.outputs.ok == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: "/review-submission issue=${{ env.ISSUE }} skill=${{ steps.unpack.outputs.skill_name }} bundle=.intake/submission.md report=.intake/unpack-report.json"
+          claude_args: |
+            --max-turns 60
+            --allowedTools "Read,Glob,Grep,Edit,Write,MultiEdit,Bash(python3:*),Bash(python:*),Bash(ls:*),Bash(cat:*),Bash(diff:*),Bash(wc:*)"
+
+      - name: Verify with the repo's own checks
+        if: steps.unpack.outputs.ok == 'true'
+        id: verify
+        continue-on-error: true
+        run: |
+          set -uo pipefail
+          npm install -g @anthropic-ai/claude-code >/dev/null 2>&1 || echo "::warning::claude CLI install failed; manifest validation will be skipped"
+          python3 .claude/skills/review-submission/scripts/verify_repo.py \
+            --skill "${{ steps.unpack.outputs.skill_name }}" --out .intake/verify.md \
+            --base-ref "origin/${{ github.event.repository.default_branch }}"
+
+      - name: Commit, push, and open or update the pull request
+        if: steps.unpack.outputs.ok == 'true'
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SKILL: ${{ steps.unpack.outputs.skill_name }}
+          VERIFY: ${{ steps.verify.outcome }}
+          BASE: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          branch="claude/skill-proposal-${ISSUE}-${SKILL}"
+          verdict=$(grep -m1 -oiE '^verdict:[[:space:]]*(ready|needs-changes|reject)' .intake/review-report.md 2>/dev/null | awk '{print tolower($2)}' || true)
+          [ -n "$verdict" ] || verdict="needs-review"
+
+          git config user.name "marq-skill-review[bot]"
+          git config user.email "skill-review@users.noreply.github.com"
+          git checkout -B "$branch"
+          git add -A -- . ':(exclude).intake'
+          changed=true
+          git diff --cached --quiet && changed=false
+
+          pr_url=""
+          if [ "$changed" = true ]; then
+            git commit -q -m "feat(${SKILL}): add ${SKILL} skill (#${ISSUE})" \
+              -m "Automated review of skill proposal #${ISSUE}. The review report and verification results are in the pull request body."
+            git push -f origin "$branch"
+            {
+              echo "Automated review of skill proposal #${ISSUE}. Closes #${ISSUE} on merge."
+              echo
+              cat .intake/review-report.md 2>/dev/null || echo "_The reviewer did not produce a review report._"
+              echo
+              cat .intake/verify.md 2>/dev/null || echo "_Verification did not run._"
+              echo
+              echo "Submitted via the contribution pipeline. Approve in Slack to merge; nothing merges automatically."
+            } > .intake/pr-body.md
+            existing=$(gh pr list --head "$branch" --state open --json url -q '.[0].url // ""')
+            if [ -n "$existing" ]; then
+              gh pr edit "$existing" --body-file .intake/pr-body.md
+              pr_url="$existing"
+            else
+              pr_url=$(gh pr create --base "$BASE" --head "$branch" \
+                --title "feat(${SKILL}): add ${SKILL} skill (#${ISSUE})" --body-file .intake/pr-body.md)
+            fi
+          fi
+
+          {
+            echo "### Automated review complete"
+            echo
+            echo "- Verdict: **${verdict}**"
+            echo "- Verification: ${VERIFY}"
+            if [ -n "$pr_url" ]; then echo "- Pull request: $pr_url"; else echo "- No repository changes were produced."; fi
+            echo
+            echo "The plugin owner will receive an approval request in Slack."
+          } > .intake/comment.md
+          gh issue comment "$ISSUE" --body-file .intake/comment.md
+          case "$verdict" in
+            ready) gh issue edit "$ISSUE" --add-label review-ready --remove-label needs-changes || true ;;
+            needs-changes|reject) gh issue edit "$ISSUE" --add-label needs-changes --remove-label review-ready || true ;;
+          esac
+
+          jq -n --arg issue "$ISSUE" --arg repo "$GITHUB_REPOSITORY" --arg skill "$SKILL" --arg verdict "$verdict" \
+            --arg verify "$VERIFY" --arg pr "$pr_url" --arg branch "$branch" \
+            '{event:"skill-proposal-reviewed", repo:$repo, issue:($issue|tonumber), skill_name:$skill, verdict:$verdict,
+              verification:$verify, pr_url:(if $pr=="" then null else $pr end), branch:$branch}' \
+            > .intake/outcome.json
+
+      - name: Notify n8n
+        if: always() && env.N8N_REVIEW_WEBHOOK != ''
+        env:
+          N8N_REVIEW_SECRET: ${{ secrets.N8N_REVIEW_SECRET }}
+        run: |
+          set -euo pipefail
+          [ -f .intake/outcome.json ] || jq -n --arg issue "$ISSUE" --arg repo "$GITHUB_REPOSITORY" \
+            '{event:"skill-proposal-reviewed", repo:$repo, issue:($issue|tonumber), verdict:"error", verification:"error", pr_url:null}' > .intake/outcome.json
+          jq --arg run "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" '. + {run_url:$run}' \
+            .intake/outcome.json > .intake/payload.json
+          curl -fsS -X POST "$N8N_REVIEW_WEBHOOK" -H 'content-type: application/json' \
+            -H "x-review-secret: ${N8N_REVIEW_SECRET:-}" --data @.intake/payload.json
