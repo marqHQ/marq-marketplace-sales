@@ -5,8 +5,6 @@ description: Package a completely new skill a sales rep has drafted into the Mar
 
 # Upload a new skill to the shared plugin
 
-> **Status: under construction.** The intake pipeline this skill hands off to (form, privacy screen, automated review, owner approval) is being stood up. Until the plugin owner announces it is live, package the submission as described below and tell the rep to send the result to Nick Hatch in Slack instead of the form; say clearly that the form may not accept submissions yet.
-
 Turn a rep's draft into one text bundle they paste into the contribution form. You never touch GitHub. After they submit, the pipeline logs the submission, opens a Slack thread in the intake channel, screens it for private data, files a public GitHub issue, runs an automated review that opens a pull request, and asks the plugin owner, Nick Hatch, to approve in Slack.
 
 Contribution form: https://marqapp.app.n8n.cloud/form/sales-plugin-contribute
