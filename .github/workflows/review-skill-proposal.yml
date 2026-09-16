@@ -124,7 +124,7 @@ jobs:
           git config user.name "marq-skill-review[bot]"
           git config user.email "skill-review@users.noreply.github.com"
           git checkout -B "$branch"
-          git add -A -- . ':(exclude).intake'
+          git add -A .   # .intake/ is gitignored, so it never gets staged
           changed=true
           git diff --cached --quiet && changed=false
 
