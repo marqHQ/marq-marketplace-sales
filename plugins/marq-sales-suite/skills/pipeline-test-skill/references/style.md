@@ -1,0 +1,2 @@
+- Bullets are one sentence each, under 20 words.
+- Quote the note for any commitment; never paraphrase a date or amount.

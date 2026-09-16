@@ -1,6 +1,6 @@
 # Marq Sales Plugins
 
-Public plugin marketplace for the Marq sales team. It contains one plugin (`marq-sales-suite`) with nine skills, packaged for both Claude Code and Codex.
+Public plugin marketplace for the Marq sales team. It contains one plugin (`marq-sales-suite`) with ten skills, packaged for both Claude Code and Codex.
 
 The source is publicly readable for installation and inspection. It remains unlicensed; public availability does not grant permission to copy, modify, or redistribute it.
 
@@ -15,6 +15,7 @@ The source is publicly readable for installation and inspection. It remains unli
 - **map-personalization** — Builds customer-ready Mutual Action Plan copy from HubSpot and Gong, selects the approved Marq template, and creates one approval-gated test project with a verified company logo.
 - **plugin-feedback** — Collects sanitized feedback about another skill, creates a feedback-only branch and pull request, and requests review from the plugin owner (`@Nhatch11`) after exact user approval. Invoke it as `@plugin-feedback` in ChatGPT or `$plugin-feedback` in Codex.
 - **upload-new-skill** — Inspects and normalizes a contributed skill, enforces the marketplace's safety and packaging contract, and submits it as a review-only pull request to `@Nhatch11`. Invoke it as `@upload-new-skill` in ChatGPT or `$upload-new-skill` in Codex.
+- **pipeline-test-skill** — Summarizes a pasted sales-call note into three bullets (outcome, open question, next step) for a rep to paste into the CRM manually; never writes to the CRM itself. Invoke it as `@pipeline-test-skill` in ChatGPT or `$pipeline-test-skill` in Codex.
 
 ## Prerequisites
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pipeline Test Skill"
+  short_description: "Three-bullet call summary for a CRM update"
+  default_prompt: "Use $pipeline-test-skill to turn this call note into three bullets."
