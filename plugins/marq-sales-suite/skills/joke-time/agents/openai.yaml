@@ -1,0 +1,4 @@
+interface:
+  display_name: "Joke Time"
+  short_description: "Tell one short, clean, work-safe joke"
+  default_prompt: "Use $joke-time to tell me a quick joke."
