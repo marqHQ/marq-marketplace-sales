@@ -1,6 +1,6 @@
 # Marq Sales Plugins
 
-Public plugin marketplace for the Marq sales team. It contains one plugin (`marq-sales-suite`) with eleven skills, packaged for both Claude Code and Codex.
+Public plugin marketplace for the Marq sales team. It contains one plugin (`marq-sales-suite`) with ten skills, packaged for both Claude Code and Codex.
 
 The source is publicly readable for installation and inspection. It remains unlicensed; public availability does not grant permission to copy, modify, or redistribute it.
 
@@ -15,12 +15,11 @@ The source is publicly readable for installation and inspection. It remains unli
 - **map-personalization** — Builds customer-ready Mutual Action Plan copy from HubSpot and Gong, selects the approved Marq template, and creates one approval-gated test project with a verified company logo.
 - **plugin-feedback** — Collects sanitized feedback about another skill and submits the sanitized record to the contribution pipeline for them; the pipeline files it as a GitHub issue, an automated review drafts the fix as a pull request, and the plugin owner approves it from Slack. No GitHub account needed. Invoke it as `@plugin-feedback` in ChatGPT or `$plugin-feedback` in Codex.
 - **upload-new-skill** — Packages a contributed skill into the submission bundle, enforces the marketplace's packaging and privacy contract, and submits it to the contribution pipeline for them; an automated review opens the pull request and the plugin owner approves in Slack. No GitHub account needed. Invoke it as `@upload-new-skill` in ChatGPT or `$upload-new-skill` in Codex.
-- **joke-time** — Tells exactly one short, clean, work-appropriate joke on request to lighten the mood between tasks. No connectors, no CRM access. Invoke it as `@joke-time` in ChatGPT or `$joke-time` in Codex.
 - **timezone-overlap** — Finds the times of day when everyone on a multi-region call is inside working hours, using a deterministic script instead of DST arithmetic. No connectors, no calendar reads or writes. Invoke it as `@timezone-overlap` in ChatGPT or `$timezone-overlap` in Codex.
 
 ## Prerequisites
 
-Connected and authorized as required by the selected workflow: **HubSpot**, **Gong**, **Google Calendar**, **Brandfetch**, **Marq**, and **Marq Analytics**. The discovery planner and post-call execution workflows require HubSpot access when CRM context is requested; post-call execution also requires a transcript or substantive notes. The marq-deal-acceleration skill requires HubSpot deal access, uses Gong when matched calls are available, and requires Python to run its deterministic momentum classifier. The mql-to-sqo skill also needs a browser tool signed into the HubSpot portal for line-item rebuilds. The plugin-feedback and upload-new-skill workflows need no connectors; they package the submission and post it to the contribution pipeline themselves (see [CONTRIBUTING.md](CONTRIBUTING.md)). The joke-time skill also needs no connectors. The timezone-overlap skill also needs no connectors; it requires Python 3.9+ with the IANA time zone database (on Windows, `pip install tzdata`).
+Connected and authorized as required by the selected workflow: **HubSpot**, **Gong**, **Google Calendar**, **Brandfetch**, **Marq**, and **Marq Analytics**. The discovery planner and post-call execution workflows require HubSpot access when CRM context is requested; post-call execution also requires a transcript or substantive notes. The marq-deal-acceleration skill requires HubSpot deal access, uses Gong when matched calls are available, and requires Python to run its deterministic momentum classifier. The mql-to-sqo skill also needs a browser tool signed into the HubSpot portal for line-item rebuilds. The plugin-feedback and upload-new-skill workflows need no connectors; they package the submission and post it to the contribution pipeline themselves (see [CONTRIBUTING.md](CONTRIBUTING.md)). The timezone-overlap skill also needs no connectors; it requires Python 3.9+ with the IANA time zone database (on Windows, `pip install tzdata`).
 
 ## Contributing
 
