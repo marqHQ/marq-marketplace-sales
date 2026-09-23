@@ -5,7 +5,7 @@ description: Collect actionable feedback about a Marq Sales skill, redact privat
 
 # Submit plugin feedback about a Marq Sales skill
 
-Turn the rep's experience into a concise feedback record you submit for them. Submit the feedback itself; do not edit the affected skill, propose implementation code, or present the feedback as an approved product decision. After they submit, the pipeline logs it, opens a Slack thread in the intake channel, screens it for private data, and files it as a public GitHub issue that the plugin owner, Nick Hatch, triages.
+Turn the rep's experience into a concise feedback record you submit for them. Submit the feedback itself; do not edit the affected skill, propose implementation code, or present the feedback as an approved product decision. After they submit, the pipeline logs it, opens a Slack DM thread with the rep, screens it for private data, and files it as a public GitHub issue. An automated review then drafts the change to the skill as a pull request, and the plugin owner, Nick Hatch, approves, requests changes, or rejects it in Slack. Nothing merges without him.
 
 You submit by posting to the pipeline endpoint from the terminal. The rep does not open a browser or fill in a form. See [references/submitting.md](references/submitting.md) for the endpoint, the payload, the exact command, and the stopping conditions.
 
@@ -46,7 +46,7 @@ If a stopping condition in the submitting reference applies, give them the form 
 
 ## What happens next
 
-Tell the rep where to watch: the intake Slack thread, the GitHub issue link posted there, and the owner's triage.
+Tell the rep where to watch: their Slack DM thread from the pipeline, which carries the GitHub issue link and every later update. Within about half an hour the automated review either opens a pull request for Nick's decision or explains why it made no change. The rep hears Nick's decision, or any question about the feedback, in the same thread.
 
 ## Completion report
 

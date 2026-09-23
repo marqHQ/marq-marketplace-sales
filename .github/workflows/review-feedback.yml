@@ -1,0 +1,251 @@
+name: Review feedback
+
+# Contribution pipeline, stage 2 for feedback (see CONTRIBUTING.md).
+#
+# Sibling of review-skill-proposal.yml. n8n files a rep's feedback about an
+# existing skill as an Issue labeled `feedback`. This workflow resolves the
+# skill deterministically, lets Claude draft the smallest change that addresses
+# the feedback, verifies the result with the repo's own validators and test
+# suites, confines the diff to that skill, opens or updates a pull request, and
+# notifies n8n so the plugin owner gets the same Slack approval prompt a skill
+# proposal gets.
+#
+# Nothing here merges. The model never holds git or GitHub tools; every
+# repository write below is a plain shell step you can read.
+
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number of the feedback to review again
+        required: true
+        type: number
+
+concurrency:
+  group: review-feedback-${{ github.event.issue.number || inputs.issue_number }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+env:
+  ISSUE: ${{ github.event.issue.number || inputs.issue_number }}
+  SKILLS_DIR: plugins/marq-sales-suite/skills
+  N8N_REVIEW_WEBHOOK: ${{ secrets.N8N_REVIEW_WEBHOOK }}
+
+jobs:
+  review:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'feedback'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # The skill comes from the heading n8n writes ("## Feedback on `<skill>`"),
+      # never from free text, and must already exist in the plugin.
+      - name: Fetch the feedback and resolve the skill
+        id: intake
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p .intake
+          gh issue view "$ISSUE" --json number,title,body,labels,url,comments > .intake/issue.json
+          jq -r '.body // ""' .intake/issue.json > .intake/feedback.md
+          # Owner change requests posted back by n8n. Only members' comments count; the repo is public.
+          jq -r '[.comments[] | select((.authorAssociation == "MEMBER" or .authorAssociation == "OWNER" or .authorAssociation == "COLLABORATOR")
+                   and (.body | startswith("### Plugin owner requested changes"))) | .body] | join("\n\n---\n\n")' \
+            .intake/issue.json > .intake/owner-notes.md
+
+          errors=()
+          jq -e '[.labels[].name] | index("feedback") != null' .intake/issue.json >/dev/null \
+            || errors+=("Issue #${ISSUE} is not labeled feedback")
+          skill=$(grep -m1 -oE '^## Feedback on `[a-z0-9-]+`' .intake/feedback.md | sed -E 's/^.*`([a-z0-9-]+)`$/\1/' || true)
+          if [ -z "$skill" ]; then
+            errors+=("The issue body has no '## Feedback on \`<skill>\`' heading")
+          elif [ ! -f "$SKILLS_DIR/$skill/SKILL.md" ]; then
+            errors+=("No skill named ${skill} exists in the plugin")
+          fi
+
+          printf '%s\n' "${errors[@]+"${errors[@]}"}" | jq -R . | jq -s --arg skill "$skill" \
+            '{skill_name:$skill, errors:[.[] | select(. != "")], warnings:[]}' > .intake/intake-report.json
+          echo "skill_name=$skill" >> "$GITHUB_OUTPUT"
+          if [ "${#errors[@]}" -eq 0 ]; then echo "ok=true" >> "$GITHUB_OUTPUT"; else echo "ok=false" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Reject on blocking errors
+        if: steps.intake.outputs.ok != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          {
+            echo "### Automated feedback check: needs attention"
+            echo
+            echo "The feedback could not be turned into a change as filed."
+            echo
+            jq -r '.errors[] | "- ❌ " + .' .intake/intake-report.json
+          } > .intake/reject.md
+          gh issue comment "$ISSUE" --body-file .intake/reject.md
+          gh issue edit "$ISSUE" --add-label needs-changes --remove-label review-ready || true
+          jq -n --arg issue "$ISSUE" --arg repo "$GITHUB_REPOSITORY" --slurpfile r .intake/intake-report.json \
+            '{event:"feedback-reviewed", kind:"feedback", repo:$repo, issue:($issue|tonumber), skill_name:$r[0].skill_name,
+              verdict:"needs-changes", verification:"skipped", pr_url:null, errors:$r[0].errors, warnings:$r[0].warnings}' \
+            > .intake/outcome.json
+
+      - name: Draft the change with Claude
+        if: steps.intake.outputs.ok == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: "/apply-feedback issue=${{ env.ISSUE }} skill=${{ steps.intake.outputs.skill_name }} feedback=.intake/feedback.md owner_notes=.intake/owner-notes.md"
+          claude_args: |
+            --max-turns 60
+            --allowedTools "Read,Glob,Grep,Edit,Write,MultiEdit,Bash(python3:*),Bash(python:*),Bash(ls:*),Bash(cat:*),Bash(diff:*),Bash(wc:*)"
+
+      # Deterministic guard: the model may only touch the named skill, the README,
+      # and the two plugin manifests. Anything else voids the run before a PR exists.
+      - name: Confine the diff to the named skill
+        if: steps.intake.outputs.ok == 'true'
+        id: scope
+        env:
+          SKILL: ${{ steps.intake.outputs.skill_name }}
+        run: |
+          set -euo pipefail
+          git add -A .   # .intake/ is gitignored, so it never gets staged
+          git diff --cached --name-only > .intake/changed.txt
+          outside=$(grep -vE "^(${SKILLS_DIR}/${SKILL}/|README\.md$|plugins/marq-sales-suite/\.claude-plugin/plugin\.json$|plugins/marq-sales-suite/\.codex-plugin/plugin\.json$)" .intake/changed.txt || true)
+          git reset -q
+          if [ -n "$outside" ]; then
+            echo "::error::changes outside the allowed paths: $outside"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            printf '%s\n' "$outside" > .intake/outside.txt
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+          if [ -d "${SKILLS_DIR}/${SKILL}" ]; then echo "removed=false" >> "$GITHUB_OUTPUT"; else echo "removed=true" >> "$GITHUB_OUTPUT"; fi
+          if [ -s .intake/changed.txt ]; then echo "changed=true" >> "$GITHUB_OUTPUT"; else echo "changed=false" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Verify with the repo's own checks
+        if: steps.intake.outputs.ok == 'true' && steps.scope.outputs.ok == 'true' && steps.scope.outputs.changed == 'true'
+        id: verify
+        continue-on-error: true
+        run: |
+          set -uo pipefail
+          npm install -g @anthropic-ai/claude-code >/dev/null 2>&1 || echo "::warning::claude CLI install failed; manifest validation will be skipped"
+          removed_flag=""
+          [ "${{ steps.scope.outputs.removed }}" = "true" ] && removed_flag="--removed"
+          python3 .claude/skills/review-submission/scripts/verify_repo.py \
+            --skill "${{ steps.intake.outputs.skill_name }}" --out .intake/verify.md $removed_flag \
+            --base-ref "origin/${{ github.event.repository.default_branch }}"
+
+      - name: Commit, push, and open or update the pull request
+        if: steps.intake.outputs.ok == 'true'
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SKILL: ${{ steps.intake.outputs.skill_name }}
+          VERIFY: ${{ steps.verify.outcome }}
+          IN_SCOPE: ${{ steps.scope.outputs.ok }}
+          CHANGED: ${{ steps.scope.outputs.changed }}
+          BASE: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          branch="claude/feedback-${ISSUE}-${SKILL}"
+          verdict=$(grep -m1 -oiE '^verdict:[[:space:]]*(ready|needs-info|no-change|reject)' .intake/review-report.md 2>/dev/null | awk '{print tolower($2)}' || true)
+          [ -n "$verdict" ] || verdict="needs-review"
+          reason=$(grep -m1 -iE '^reason:' .intake/review-report.md 2>/dev/null | sed -E 's/^[Rr]eason:[[:space:]]*//' || true)
+          problems=()
+          [ -n "$reason" ] && problems+=("$reason")
+          if [ "$IN_SCOPE" != "true" ]; then
+            verdict="out-of-scope"
+            problems+=("The drafted change touched files outside the ${SKILL} skill: $(paste -sd, .intake/outside.txt)")
+          elif [ "$verdict" = "ready" ] && [ "$CHANGED" != "true" ]; then
+            verdict="no-change"
+            problems+=("The reviewer reported ready but produced no repository changes")
+          fi
+
+          pr_url=""
+          if [ "$verdict" = "ready" ]; then
+            git config user.name "marq-skill-review[bot]"
+            git config user.email "skill-review@users.noreply.github.com"
+            git checkout -B "$branch"
+            git add -A .
+            title="fix(${SKILL}): address feedback (#${ISSUE})"
+            git commit -q -m "$title" \
+              -m "Automated change for feedback #${ISSUE}. The review report and verification results are in the pull request body."
+            # The Claude action swaps git credentials for its App token and its cleanup step removes the
+            # checkout token from git config, so push with an explicit token URL instead of the remote.
+            git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:refs/heads/${branch}"
+            {
+              echo "Automated change for feedback #${ISSUE}. Closes #${ISSUE} on merge."
+              echo
+              cat .intake/review-report.md 2>/dev/null || echo "_The reviewer did not produce a review report._"
+              echo
+              cat .intake/verify.md 2>/dev/null || echo "_Verification did not run._"
+              echo
+              echo "Submitted via the contribution pipeline. Approve in Slack to merge; nothing merges automatically."
+            } > .intake/pr-body.md
+            existing=$(gh pr list --head "$branch" --state open --json url -q '.[0].url // ""')
+            if [ -n "$existing" ]; then
+              gh pr edit "$existing" --body-file .intake/pr-body.md
+              pr_url="$existing"
+            else
+              pr_url=$(gh pr create --base "$BASE" --head "$branch" --title "$title" --body-file .intake/pr-body.md)
+            fi
+          fi
+
+          {
+            echo "### Automated feedback review complete"
+            echo
+            echo "- Verdict: **${verdict}**"
+            [ "${#problems[@]}" -gt 0 ] && printf -- '- %s\n' "${problems[@]}"
+            echo "- Verification: ${VERIFY:-skipped}"
+            if [ -n "$pr_url" ]; then echo "- Pull request: $pr_url"; else echo "- No pull request was opened."; fi
+            echo
+            if [ "$verdict" = "ready" ]; then
+              echo "The plugin owner will receive an approval request in Slack."
+            else
+              echo "The plugin owner has been notified in Slack."
+            fi
+            if [ -f .intake/review-report.md ] && [ "$verdict" != "ready" ]; then
+              echo
+              echo "<details><summary>Review report</summary>"
+              echo
+              cat .intake/review-report.md
+              echo
+              echo "</details>"
+            fi
+          } > .intake/comment.md
+          gh issue comment "$ISSUE" --body-file .intake/comment.md
+          case "$verdict" in
+            ready) gh issue edit "$ISSUE" --add-label review-ready --remove-label needs-changes || true ;;
+            *) gh issue edit "$ISSUE" --add-label needs-changes --remove-label review-ready || true ;;
+          esac
+
+          printf '%s\n' "${problems[@]+"${problems[@]}"}" | jq -R . | jq -s \
+            --arg issue "$ISSUE" --arg repo "$GITHUB_REPOSITORY" --arg skill "$SKILL" --arg verdict "$verdict" \
+            --arg verify "${VERIFY:-skipped}" --arg pr "$pr_url" --arg branch "$branch" \
+            '{event:"feedback-reviewed", kind:"feedback", repo:$repo, issue:($issue|tonumber), skill_name:$skill, verdict:$verdict,
+              verification:$verify, pr_url:(if $pr=="" then null else $pr end), branch:$branch,
+              errors:[.[] | select(. != "")], warnings:[]}' \
+            > .intake/outcome.json
+
+      # Same webhook and payload shape as review-skill-proposal.yml, plus `kind`.
+      # Do not enable n8n's `ignoreBots` on that webhook: it rejects curl with a 403.
+      - name: Notify n8n
+        if: always() && env.N8N_REVIEW_WEBHOOK != ''
+        run: |
+          set -euo pipefail
+          [ -f .intake/outcome.json ] || jq -n --arg issue "$ISSUE" --arg repo "$GITHUB_REPOSITORY" \
+            '{event:"feedback-reviewed", kind:"feedback", repo:$repo, issue:($issue|tonumber), verdict:"error", verification:"error", pr_url:null}' > .intake/outcome.json
+          jq --arg run "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" '. + {run_url:$run}' \
+            .intake/outcome.json > .intake/payload.json
+          curl -fsS -X POST "$N8N_REVIEW_WEBHOOK" -H 'content-type: application/json' \
+            --data @.intake/payload.json

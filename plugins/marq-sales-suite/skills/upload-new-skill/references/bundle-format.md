@@ -38,4 +38,4 @@ Rules the parser enforces:
 - Each file under 200,000 bytes, the whole bundle under 60,000 characters when pasted into the form, at most 40 files.
 - Any string that looks like a Slack, GitHub, Anthropic, OpenAI, HubSpot, Google, or AWS credential, a private key, or a JWT rejects the submission before it reaches GitHub.
 
-What happens after submission: the pipeline installs the files under `plugins/marq-sales-suite/skills/<skill_name>/`, an automated reviewer applies the owner's checklist and fixes packaging, deterministic checks run the repository's test suites and validators, a pull request opens with the review report, and the plugin owner decides in Slack. The rep sees progress in the intake Slack thread.
+What happens after submission: the pipeline installs the files under `plugins/marq-sales-suite/skills/<skill_name>/`, an automated reviewer applies the owner's checklist and fixes packaging, deterministic checks run the repository's test suites and validators, a pull request opens with the review report, and the plugin owner decides in Slack. The rep sees progress in their Slack DM thread from the pipeline.

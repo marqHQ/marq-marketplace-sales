@@ -13,7 +13,7 @@ The source is publicly readable for installation and inspection. It remains unli
 - **marq-post-call-execution** — Turns a completed call into an evidence-tagged deal summary, qualification and stakeholder assessment, commitment record, next-step plan, proposed HubSpot changes, and grounded customer follow-up. CRM writes and external communication remain approval-gated. Invoke it as `@marq-post-call-execution` in ChatGPT or `$marq-post-call-execution` in Codex.
 - **spiced-call-coach** — Reviews a sales call using the SPICED framework and returns evidence-backed coaching.
 - **map-personalization** — Builds customer-ready Mutual Action Plan copy from HubSpot and Gong, selects the approved Marq template, and creates one approval-gated test project with a verified company logo.
-- **plugin-feedback** — Collects sanitized feedback about another skill and submits the sanitized record to the contribution pipeline for them; the pipeline files it as a GitHub issue for the plugin owner. No GitHub account needed. Invoke it as `@plugin-feedback` in ChatGPT or `$plugin-feedback` in Codex.
+- **plugin-feedback** — Collects sanitized feedback about another skill and submits the sanitized record to the contribution pipeline for them; the pipeline files it as a GitHub issue, an automated review drafts the fix as a pull request, and the plugin owner approves it from Slack. No GitHub account needed. Invoke it as `@plugin-feedback` in ChatGPT or `$plugin-feedback` in Codex.
 - **upload-new-skill** — Packages a contributed skill into the submission bundle, enforces the marketplace's packaging and privacy contract, and submits it to the contribution pipeline for them; an automated review opens the pull request and the plugin owner approves in Slack. No GitHub account needed. Invoke it as `@upload-new-skill` in ChatGPT or `$upload-new-skill` in Codex.
 - **joke-time** — Tells exactly one short, clean, work-appropriate joke on request to lighten the mood between tasks. No connectors, no CRM access. Invoke it as `@joke-time` in ChatGPT or `$joke-time` in Codex.
 - **timezone-overlap** — Finds the times of day when everyone on a multi-region call is inside working hours, using a deterministic script instead of DST arithmetic. No connectors, no calendar reads or writes. Invoke it as `@timezone-overlap` in ChatGPT or `$timezone-overlap` in Codex.
@@ -24,7 +24,7 @@ Connected and authorized as required by the selected workflow: **HubSpot**, **Go
 
 ## Contributing
 
-The contribution skills post feedback and new skills straight to the intake pipeline, with a hosted form kept as a fallback for anyone without a terminal; a GitHub Actions review opens a pull request and the plugin owner approves from Slack. Nobody needs a GitHub account. Details in [CONTRIBUTING.md](CONTRIBUTING.md).
+The contribution skills post feedback and new skills straight to the intake pipeline, with a hosted form kept as a fallback for anyone without a terminal; for both, a GitHub Actions review opens a pull request and the plugin owner approves from Slack. Nobody needs a GitHub account. Details in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Install
 

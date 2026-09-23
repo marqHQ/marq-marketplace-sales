@@ -21,7 +21,8 @@ Run the audit suite after any change under `audit-hubspot-pipeline/scripts/` or 
 - Marketplace manifests: `.claude-plugin/marketplace.json` (Claude Code) and `.agents/plugins/marketplace.json` (Codex).
 - Plugin manifests: `plugins/marq-sales-suite/.claude-plugin/plugin.json` and `plugins/marq-sales-suite/.codex-plugin/plugin.json`. Keep name, description, and version in sync across both when editing either.
 - `under-construction/` — draft docs, not skill-formatted. Don't load or promote them without adding proper SKILL.md frontmatter.
-- `.claude/skills/review-submission/` — owner-side review skill run by `.github/workflows/review-skill-proposal.yml`, plus the deterministic `unpack_submission.py` and `verify_repo.py` scripts. Not part of the shipped plugin. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full intake → review → approval pipeline.
+- `.claude/skills/review-submission/` — owner-side review skill run by `.github/workflows/review-skill-proposal.yml`, plus the deterministic `unpack_submission.py` and `verify_repo.py` scripts. Not part of the shipped plugin.
+- `.claude/skills/apply-feedback/` — owner-side skill run by `.github/workflows/review-feedback.yml` that drafts a change to an existing skill from rep feedback. Not part of the shipped plugin. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full intake → review → approval pipeline.
 
 ## Invariants — do not weaken when editing skills
 

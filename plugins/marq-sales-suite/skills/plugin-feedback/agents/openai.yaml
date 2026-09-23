@@ -1,4 +1,4 @@
 interface:
   display_name: "Plugin Feedback"
-  short_description: "Turn skill feedback into an intake form submission"
-  default_prompt: "Use $plugin-feedback to turn my feedback about a Marq Sales skill into a ready-to-submit feedback record and give me the intake form link."
+  short_description: "Submit skill feedback to the contribution pipeline"
+  default_prompt: "Use $plugin-feedback to turn my feedback about a Marq Sales skill into a feedback record and submit it to the contribution pipeline for me."

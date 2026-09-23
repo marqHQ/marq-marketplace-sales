@@ -6,7 +6,10 @@ pull-request body carries evidence the model did not produce: test suites,
 manifest validation, manifest sync and version bump, README catalog, and the
 new skill's package shape. Exit 0 when every check passes, 1 otherwise.
 
-    python3 verify_repo.py --skill <name> --out .intake/verify.md [--base-ref origin/main]
+    python3 verify_repo.py --skill <name> --out .intake/verify.md [--base-ref origin/main] [--removed]
+
+--removed is for feedback that deletes a skill: it checks the folder and every
+README mention are gone instead of checking the skill's package shape.
 """
 from __future__ import annotations
 
@@ -113,6 +116,19 @@ def check_readme(rep: Report, skill: str) -> None:
               stated == len(dirs), f"README says: {m.group(1) if m else 'not found'}")
 
 
+def check_removed(rep: Report, skill: str) -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    rep.check(f"{skill}/ folder is removed", not (SKILLS / skill).exists())
+    rep.check(f"README no longer mentions {skill}", skill not in readme)
+    dirs = sorted(p.name for p in SKILLS.iterdir() if p.is_dir() and (p / "SKILL.md").exists())
+    m = re.search(r"with (\w+) skills", readme)
+    stated = None
+    if m:
+        stated = NUMBER_WORDS.get(m.group(1).lower(), int(m.group(1)) if m.group(1).isdigit() else None)
+    rep.check(f"README skill count matches {len(dirs)} skill directories",
+              stated == len(dirs), f"README says: {m.group(1) if m else 'not found'}")
+
+
 def check_skill_package(rep: Report, skill: str) -> None:
     d = SKILLS / skill
     rep.check(f"{skill}/SKILL.md exists", (d / "SKILL.md").exists())
@@ -139,6 +155,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--skill", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--base-ref", default="origin/main")
+    parser.add_argument("--removed", action="store_true", help="the change deletes this skill")
     args = parser.parse_args(argv)
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -158,8 +175,11 @@ def main(argv: list[str] | None = None) -> int:
         rep.lines.append("- ⚪ `claude plugin validate`: skipped (CLI not installed on this runner)")
 
     check_manifests(rep, args.base_ref)
-    check_readme(rep, args.skill)
-    check_skill_package(rep, args.skill)
+    if args.removed:
+        check_removed(rep, args.skill)
+    else:
+        check_readme(rep, args.skill)
+        check_skill_package(rep, args.skill)
 
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     Path(args.out).write_text(rep.text(), encoding="utf-8")
