@@ -61,4 +61,3 @@ Run after any change to the scoring logic or fixtures.
 .agents/plugins/marketplace.json   Codex marketplace manifest
 plugins/marq-sales-suite/          The plugin (skills/, both plugin manifests, assets)
 ```
-Quick test trigger: here
