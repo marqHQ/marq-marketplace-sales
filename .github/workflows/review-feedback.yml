@@ -109,6 +109,27 @@ jobs:
             --max-turns 60
             --allowedTools "Read,Glob,Grep,Edit,Write,MultiEdit,Bash(python3:*),Bash(python:*),Bash(ls:*),Bash(cat:*),Bash(diff:*),Bash(wc:*)"
 
+      # The model has no delete tool by design. It lists what it wants deleted, and
+      # this step removes only paths inside the named skill's folder.
+      - name: Apply requested deletions
+        if: steps.intake.outputs.ok == 'true'
+        env:
+          SKILL: ${{ steps.intake.outputs.skill_name }}
+        run: |
+          set -euo pipefail
+          [ -f .intake/delete-paths.txt ] || { echo "No deletions requested."; exit 0; }
+          root="$(realpath "${SKILLS_DIR}/${SKILL}")"
+          while IFS= read -r p || [ -n "$p" ]; do
+            p="${p%$'\r'}"
+            [ -n "$p" ] || continue
+            [ -e "$p" ] || { echo "::warning::requested deletion does not exist: $p"; continue; }
+            target="$(realpath "$p")"
+            case "$target/" in
+              "$root/"*) git rm -rq --ignore-unmatch -- "$p" && rm -rf -- "$p"; echo "Deleted $p" ;;
+              *) echo "::error::refusing to delete outside ${SKILLS_DIR}/${SKILL}: $p"; exit 1 ;;
+            esac
+          done < .intake/delete-paths.txt
+
       # Deterministic guard: the model may only touch the named skill, the README,
       # and the two plugin manifests. Anything else voids the run before a PR exists.
       - name: Confine the diff to the named skill
