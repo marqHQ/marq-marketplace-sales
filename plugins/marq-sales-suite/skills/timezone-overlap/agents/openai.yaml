@@ -1,4 +1,0 @@
-interface:
-  display_name: "Time Zone Overlap"
-  short_description: "Find meeting times that work across time zones"
-  default_prompt: "Use $timezone-overlap to find a slot that works for everyone."
