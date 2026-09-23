@@ -11,20 +11,25 @@ Both reach the same pipeline. The skills post your submission for you, so you ne
 
 ## 2. Review
 
-- **Feedback** issues get the `feedback` label. The plugin owner triages them; `@claude` on the issue can draft a fix.
+- **Feedback** issues get the `feedback` label, which starts [`review-feedback.yml`](.github/workflows/review-feedback.yml):
+  1. A shell step resolves the skill from the issue's ``## Feedback on `<skill>` `` heading and confirms it exists. Deterministic, no model involved.
+  2. Claude, running the [`apply-feedback`](.claude/skills/apply-feedback/SKILL.md) skill, drafts the smallest change that addresses the feedback, or explains why it made none (`needs-info`, `no-change`, `reject`). It has no git or GitHub tools.
+  3. A shell step voids the run if the change touches anything outside that skill, the README, or the two plugin manifests.
+  4. `verify_repo.py` reruns the test suites and validators (`--removed` when the feedback deletes a skill).
+  5. A plain shell step commits to `claude/feedback-<issue>-<skill>`, opens or updates the pull request, comments on the issue, and posts the outcome to the same n8n webhook.
 - **Skill proposals** get the `skill-proposal` label, which starts [`review-skill-proposal.yml`](.github/workflows/review-skill-proposal.yml):
   1. `unpack_submission.py` rejects unsafe paths, disallowed file types, secrets, name collisions, and oversize bundles. Deterministic, no model involved. Failures are commented on the issue and the label flips to `needs-changes`.
   2. Claude, running the [`review-submission`](.claude/skills/review-submission/SKILL.md) skill, applies the [review checklist](.claude/skills/review-submission/references/review-checklist.md), fixes packaging, integrates the skill, and writes a report. It has no git or GitHub tools.
   3. `verify_repo.py` reruns the test suites and validators and checks manifests and README. Its results go in the pull-request body whether they pass or fail.
-  4. A plain shell step commits to `claude/skill-proposal-<issue>-<skill>`, opens or updates the pull request, comments on the issue, and posts the outcome to the n8n webhook (`N8N_REVIEW_WEBHOOK`, authenticated with `N8N_REVIEW_SECRET`).
+  4. A plain shell step commits to `claude/skill-proposal-<issue>-<skill>`, opens or updates the pull request, comments on the issue, and posts the outcome to the n8n webhook (`N8N_REVIEW_WEBHOOK`, whose unguessable path suffix is the shared secret).
 
-To change the review criteria, edit the checklist file. The workflow reads it on every run.
+To change the review criteria, edit the checklist file or the `apply-feedback` skill. The workflows read them on every run.
 
 ## 3. Approve and ship
 
 The whole pipeline is one n8n workflow, *Sales plugin contribution pipeline*, so there is a single place to watch it run.
 
-The same workflow receives that outcome and sends the plugin owner one Slack DM with the verdict, the deterministic check results, and the pull-request link. He picks Approve and merge, Request changes, or Reject in a short form. Approve merges the pull request through the GitHub API. Request changes posts his notes to the issue and re-runs the review. Reject closes both. Nothing merges automatically, nothing pushes to `main` except a merged pull request, and the submitter is told the outcome either way.
+The same workflow receives that outcome, for skill proposals and feedback alike, and sends the plugin owner one Slack DM with the verdict, the deterministic check results, and the pull-request link. He picks Approve and merge, Request changes, or Reject. A review that produced no pull request (for feedback: `needs-info`, `no-change`, or `reject`) sends him a notice instead, and the submitter is told why. Approve merges the pull request through the GitHub API. Request changes posts his notes to the issue and re-runs the review. Reject closes both. Nothing merges automatically, nothing pushes to `main` except a merged pull request, and the submitter is told the outcome either way.
 
 A merge to `main` triggers the private mirror sync and is picked up by the ChatGPT workspace's daily marketplace sync.
 

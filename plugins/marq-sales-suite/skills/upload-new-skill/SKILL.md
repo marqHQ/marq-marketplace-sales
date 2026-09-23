@@ -5,7 +5,7 @@ description: Package a completely new skill a sales rep has drafted into the Mar
 
 # Upload a new skill to the shared plugin
 
-Turn a rep's draft into one text bundle and submit it to the contribution pipeline on their behalf. You never touch GitHub. After submission, the pipeline logs it, opens a Slack thread in the intake channel, screens it for private data, files a public GitHub issue, runs an automated review that opens a pull request, and asks the plugin owner, Nick Hatch, to approve in Slack.
+Turn a rep's draft into one text bundle and submit it to the contribution pipeline on their behalf. You never touch GitHub. After submission, the pipeline logs it, opens a Slack DM thread with the rep, screens it for private data, files a public GitHub issue, runs an automated review that opens a pull request, and asks the plugin owner, Nick Hatch, to approve in Slack.
 
 You submit by posting to the pipeline endpoint from the terminal. The rep does not open a browser or fill in a form. See [references/submitting.md](references/submitting.md) for the endpoint, the fields, the exact command, and the stopping conditions.
 
@@ -63,7 +63,7 @@ If a stopping condition in the submitting reference applies, give them the form 
 
 ## What happens next
 
-Tell the rep where to watch: the intake Slack thread, the GitHub issue link posted there, the automated review, and the owner's approval decision. Every stage DMs them.
+Tell the rep where to watch: their Slack DM thread from the pipeline, the GitHub issue link posted there, the automated review, and the owner's approval decision. Every stage DMs them.
 
 ## Completion report
 

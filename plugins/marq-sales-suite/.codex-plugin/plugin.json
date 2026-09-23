@@ -1,6 +1,6 @@
 {
   "name": "marq-sales-suite",
-  "version": "0.14.0+codex.20260923215052",
+  "version": "0.14.1+codex.20260923221344",
   "description": "Sales workflows for discovery planning, qualifying and accelerating deals, post-call execution, pipeline hygiene, call coaching, Mutual Action Plans, and shared-skill contribution at Marq.",
   "author": {
     "name": "Marq Sales"
