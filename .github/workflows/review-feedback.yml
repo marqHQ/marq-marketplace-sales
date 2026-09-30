@@ -106,6 +106,7 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: "/apply-feedback issue=${{ env.ISSUE }} skill=${{ steps.intake.outputs.skill_name }} feedback=.intake/feedback.md owner_notes=.intake/owner-notes.md"
           claude_args: |
+            --model claude-sonnet-5
             --max-turns 60
             --allowedTools "Read,Glob,Grep,Edit,Write,MultiEdit,Bash(python3:*),Bash(python:*),Bash(ls:*),Bash(cat:*),Bash(diff:*),Bash(wc:*)"
 
