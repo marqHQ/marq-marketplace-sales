@@ -93,6 +93,7 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: "/review-submission issue=${{ env.ISSUE }} skill=${{ steps.unpack.outputs.skill_name }} bundle=.intake/submission.md report=.intake/unpack-report.json"
           claude_args: |
+            --model claude-sonnet-5
             --max-turns 60
             --allowedTools "Read,Glob,Grep,Edit,Write,MultiEdit,Bash(python3:*),Bash(python:*),Bash(ls:*),Bash(cat:*),Bash(diff:*),Bash(wc:*)"
 
