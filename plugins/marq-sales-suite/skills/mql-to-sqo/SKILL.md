@@ -25,7 +25,7 @@ Use the HubSpot connector for record lookup, property discovery, semantic writes
 
 Use `search_gong_calls` and `get_gong_transcript` when available to resolve missing SQO qualification fields before asking the rep. Read [references/gong-field-inference.md](references/gong-field-inference.md) before using transcript evidence. Gong enrichment proposes values but never authorizes CRM writes or replaces the required line-item instructions.
 
-Use the browser only for HubSpot UI operations that the connector cannot complete reliably, especially rebuilding line items and selecting **Update deal amount**. Before browser work, follow the installed in-app Browser skill and its connector-first routing rule.
+Use the browser only for HubSpot UI operations that the connector cannot complete reliably, especially rebuilding line items and selecting **Update deal amount**. Before browser work, follow the installed in-app Browser skill and its connector-first routing rule. When the connector exposes a reliable semantic write for line items, use it instead of the browser and synchronize the amount through the connector path in [Step 7](#7-synchronize-the-deal-amount); the browser's **Update deal amount** dialog never appears for a connector-only write, so do not wait for it.
 
 Read [references/browser-line-items.md](references/browser-line-items.md) before editing line items in the HubSpot UI.
 
@@ -123,21 +123,26 @@ Do not change the CRM until the user approves the exact proposal. Treat approval
 
 Use the HubSpot connector for supported field updates. Move the resolved deal—not a new record—into the approved AE pipeline and stage, and apply only the approved qualification, owner, development-rep, and close-date changes.
 
+Move the deal only as far as the disclosed SQO stage from Step 4, not any stage beyond it. This skill's scope ends at SQO; do not advance the deal further, even when the discovered stage list shows a later stage that also looks plausible. If more than one discovered stage could plausibly be the sales-qualified-opportunity stage, treat it as an ambiguous match like an ambiguous product match: stop and ask the rep to confirm which stage is correct before writing, rather than selecting the one that appears most advanced.
+
 If HubSpot rejects the stage change because fields are required, discover the missing fields and obtain values from existing evidence or the user. Do not guess.
 
 ### 6. Build the approved line-item set
 
-Use the HubSpot line-item editor in the browser when the UI is required to synchronize the deal amount.
+Add or update the approved line items through the HubSpot connector when it exposes a reliable semantic write for line items. Use the HubSpot line-item editor in the browser only when the connector cannot reliably add or rebuild the complete set.
 
 If existing line items must be removed to surface HubSpot's amount-update prompt, delete them only after the approval explicitly covers removal and rebuilding. Recreate the complete intended set from the product library; do not rebuild only the newly requested additions.
 
-Follow [references/browser-line-items.md](references/browser-line-items.md) for the detailed UI sequence and recovery rules.
+Follow [references/browser-line-items.md](references/browser-line-items.md) for the detailed UI sequence and recovery rules when the browser is required.
 
 ### 7. Synchronize the deal amount
 
-After saving the complete line-item set, select **Update deal amount** in HubSpot's confirmation prompt. Confirm that the amount shown in the prompt matches the calculated proposal before accepting it.
+Amount synchronization is required after every line-item write, regardless of which surface built the set:
 
-If the prompt does not appear, do not claim success. Reopen the editor, verify that the intended complete set was saved, and use the recovery path in the browser reference.
+- **Browser path:** After saving the complete line-item set, select **Update deal amount** in HubSpot's confirmation prompt. Confirm that the amount shown in the prompt matches the calculated proposal before accepting it. If the prompt does not appear, do not claim success. Reopen the editor, verify that the intended complete set was saved, and use the recovery path in the browser reference.
+- **Connector path:** A connector-only line-item write never triggers the browser's amount-update dialog. After the connector writes or updates the line items, re-read the deal's amount through the connector. If it does not already equal the sum of the approved line-item amounts, update the deal's amount property directly through the connector to that calculated total.
+
+Treat the deal amount as unsynchronized, on either path, until the independent verification in Step 8 confirms it.
 
 ### 8. Verify independently
 
@@ -153,7 +158,7 @@ Re-read the deal and its associated line items through the HubSpot connector. Ve
 - Deal amount
 - TCV, ACV, and ARR when available
 
-Do not rely only on a browser success banner. If any value is stale or inconsistent, report the discrepancy and continue only within the already approved scope.
+Do not rely only on a browser success banner. If any value is stale or inconsistent, report the discrepancy and continue only within the already approved scope. A blank or zero deal amount while approved line items exist is a discrepancy to report, not a step to silently skip; return to Step 7 and retry synchronization on the surface that was used before reporting completion.
 
 ## Completion report
 
