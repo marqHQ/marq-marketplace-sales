@@ -1,4 +1,16 @@
 interface:
   display_name: "MAP Personalization"
-  short_description: "Build a personalized MAP for a prospect"
+  short_description: "Build an evidence-backed MAP from customer calls"
   default_prompt: "Use $map-personalization to build a MAP for <prospect>."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "marq_analytics"
+      description: "Marq Analytics access to Gong transcripts and approved messaging"
+    - type: "mcp"
+      value: "brandfetch"
+      description: "Brandfetch access to verified company logo assets"
+    - type: "mcp"
+      value: "marq"
+      description: "Marq Product access to templates, projects, smart fields, and exports"

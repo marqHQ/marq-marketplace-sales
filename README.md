@@ -12,7 +12,7 @@ The source is publicly readable for installation and inspection. It remains unli
 - **marq-deal-acceleration** — Finds one active opportunity from a deal or account name, diagnoses its evidence-supported stage, customer momentum, qualification, stakeholder coverage, close-date credibility, and forecast risk, then recommends no more than two high-leverage actions. It is read-only and proposes CRM corrections without applying them. Invoke it as `@marq-deal-acceleration` in ChatGPT or `$marq-deal-acceleration` in Codex.
 - **marq-post-call-execution** — Turns a completed call into an evidence-tagged deal summary, qualification and stakeholder assessment, commitment record, next-step plan, proposed HubSpot changes, and grounded customer follow-up. CRM writes and external communication remain approval-gated. Invoke it as `@marq-post-call-execution` in ChatGPT or `$marq-post-call-execution` in Codex.
 - **spiced-call-coach** — Reviews a sales call using the SPICED framework and returns evidence-backed coaching.
-- **map-personalization** — Builds customer-ready Mutual Action Plan copy from HubSpot and Gong, selects the approved Marq template, and creates one approval-gated test project with a verified company logo.
+- **map-personalization** — Builds evidence-backed Mutual Action Plan copy from customer transcripts, checks all seven approved industry templates, and creates one approval-gated internal pilot project with a verified PNG logo and protected-content QA. Optional and investment-page automation remains inactive until separately configured.
 - **plugin-feedback** — Collects sanitized feedback about another skill and submits the sanitized record to the contribution pipeline for them; the pipeline files it as a GitHub issue, an automated review drafts the fix as a pull request, and the plugin owner approves it from Slack. No GitHub account needed. Invoke it as `@plugin-feedback` in ChatGPT or `$plugin-feedback` in Codex.
 - **upload-new-skill** — Packages a contributed skill into the submission bundle, enforces the marketplace's packaging and privacy contract, and submits it to the contribution pipeline for them; an automated review opens the pull request and the plugin owner approves in Slack. No GitHub account needed. Invoke it as `@upload-new-skill` in ChatGPT or `$upload-new-skill` in Codex.
 
@@ -46,11 +46,15 @@ Registering the GitHub repository without a pinned ref lets Codex track marketpl
 
 ```
 python plugins/marq-sales-suite/skills/audit-hubspot-pipeline/scripts/run_tests.py
+python3 plugins/marq-sales-suite/skills/map-personalization/scripts/run_tests.py
+python3 plugins/marq-sales-suite/skills/map-personalization/scripts/validate_template_map.py
 python3 plugins/marq-sales-suite/skills/marq-deal-acceleration/scripts/run_tests.py
 python3 plugins/marq-sales-suite/skills/marq-post-call-execution/scripts/check_acceptance_fixtures.py
 ```
 
 Run after any change to the scoring logic or fixtures.
+
+Run the MAP checks after changes to its validators, evidence schema, copy budgets, or template map. These checks validate structure and configured IDs; live template permissions, factual evidence, and rendered project QA still require the pilot workflow.
 
 ## Layout
 
