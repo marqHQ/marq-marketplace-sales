@@ -4,8 +4,8 @@ Sales reps contribute without touching GitHub. The pipeline has three stages, ea
 
 ## 1. Submit
 
-- **Feedback about an existing skill:** run `plugin-feedback` in ChatGPT or Codex. It interviews you, redacts customer data, shows you the record, and submits it once you confirm it.
-- **A new skill:** run `upload-new-skill`. It normalizes your draft into a single text bundle, shows it to you, and submits it once you confirm it. Skills are text, so nothing is zipped or uploaded.
+- **Feedback about an existing skill:** run `plugin-feedback` in ChatGPT or Codex. It reads the conversation, asks only what it still needs, redacts customer data, shows you the record, and submits it once you confirm it.
+- **A new skill:** run `upload-new-skill`. It normalizes your draft into a single text bundle, shows you a summary of what it will submit, and submits it once you confirm it. The full bundle is available on request. Skills are text, so nothing is zipped or uploaded.
 
 Both reach the same pipeline. The skills post your submission for you, so you never open a browser; if you have no terminal, the hosted form at <https://marqapp.app.n8n.cloud/form/sales-plugin-contribute> does the same thing by hand. One n8n workflow logs the submission to the ledger, DMs you in Slack, screens the text for private data, and files a GitHub issue on your behalf. You never need a GitHub account, and every later update arrives as a reply in that same Slack DM thread.
 

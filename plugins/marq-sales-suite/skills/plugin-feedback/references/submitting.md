@@ -27,13 +27,16 @@ The pipeline has two intake lanes. Agents use the JSON webhook. The hosted form 
 
 ## Posting it
 
-Write the payload to a UTF-8 file and post the file. Never build the JSON on a command line: bundles contain newlines, quotes, `$`, and backticks, and every shell mangles at least one of them. Serialize with a real JSON writer so the bundle is escaped correctly.
+Each file write and each command can cost the rep an approval prompt, so submit with exactly one file write and one command. Do not write the bundle or record to a separate file first.
+
+1. Write the complete payload to `payload.json` as UTF-8 with your file-writing tool. Never build the JSON on a command line: bundles contain newlines, quotes, `$`, and backticks, and every shell mangles at least one of them. Escape the submission as a JSON string, with newlines as `\n`, double quotes as `\"`, and backslashes as `\\`. If your environment can only write files by running code, serialize with a real JSON writer and post in that same command.
+2. Post the file from the directory that holds it:
 
 ```
-curl -sS -X POST "https://marqapp.app.n8n.cloud/webhook/sales-plugin-submit" -H "Content-Type: application/json" -d @payload.json -w '\nHTTP %{http_code}\n'
+curl -sS -X POST "https://marqapp.app.n8n.cloud/webhook/sales-plugin-submit" -H "Content-Type: application/json" -d "@payload.json" -w '\nHTTP %{http_code}\n'
 ```
 
-macOS and Linux use `curl`. Windows uses `curl.exe`. The arguments are identical; only the executable name differs, because in Windows PowerShell 5.1 the bare word `curl` is an alias for `Invoke-WebRequest` and rejects these arguments. Keep the command on one line so no shell-specific continuation character is needed.
+macOS and Linux use `curl`. Windows uses `curl.exe`. The arguments are identical; only the executable name differs, because in Windows PowerShell 5.1 the bare word `curl` is an alias for `Invoke-WebRequest` and rejects these arguments. Keep `"@payload.json"` in quotes: unquoted, PowerShell reads `@` as its splatting operator and fails before curl runs. Keep the command on one line so no shell-specific continuation character is needed.
 
 A successful post returns `HTTP 200` and:
 
@@ -53,7 +56,7 @@ Stop and hand the rep the form link with the field values when any of these is t
 
 - No curl on the machine, or no network path to `marqapp.app.n8n.cloud`
 - The POST returns a non-2xx status twice in a row
-- The rep has not confirmed the exact bundle text
+- The rep has not confirmed the submission
 
 Do not retry a POST that returned `HTTP 200`. The pipeline is not idempotent; a second identical POST files a second submission.
 
