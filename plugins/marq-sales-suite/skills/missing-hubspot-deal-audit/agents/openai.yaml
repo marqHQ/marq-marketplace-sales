@@ -1,0 +1,4 @@
+interface:
+  display_name: "Missing HubSpot Deal Audit"
+  short_description: "Find sales meetings missing HubSpot deals"
+  default_prompt: "Use $missing-hubspot-deal-audit to check this week's demos and sales meetings for missing HubSpot deals."
