@@ -16,30 +16,31 @@ Read [references/submission-template.md](references/submission-template.md) befo
 ## Intake
 
 1. Inspect the current conversation before asking questions. Identify the skill most recently used and the relevant step, inputs, outputs, errors, and corrections the rep already supplied.
-2. Propose the affected skill when the conversation supports one exact match and ask the rep to confirm it; otherwise ask which installed Marq Sales skill the feedback concerns. Use the skill's folder name, for example `spiced-call-coach`.
+2. Identify the affected skill by its folder name, for example `spiced-call-coach`. When the conversation supports one exact match, use it without asking; it appears in the confirmation summary. Ask which installed Marq Sales skill the feedback concerns only when there is no single match.
 3. Gather only the missing information needed to answer:
    - What happened?
    - What should have happened instead?
    - Why does the difference matter to a rep, customer, or workflow?
    - What steps, inputs, or conditions reproduce it?
    - Is there a suggested direction, if the rep has one?
-4. Ask one focused question at a time. Do not force the rep to repeat facts that are already clear. Suggested direction, evidence, and reproducibility are useful but not required when the issue is already actionable.
-5. Classify the feedback as one of: `incorrect-behavior`, `missing-step`, `unclear-instruction`, `tool-failure`, `output-quality`, `workflow-friction`, `permissions-or-security`, or `enhancement`.
-6. Preserve uncertainty. Distinguish what the rep observed from what you infer. Do not invent a root cause.
-7. Redact sensitive content before rendering. Replace it with neutral descriptions such as `[customer]`, `[deal]`, `[amount]`, or `[private link omitted]`. Tell the rep what was redacted. The pipeline runs its own privacy screen and holds anything it flags for the owner, so do not rely on it to catch what you can see.
+4. Take the rep's name and Marq email from the conversation or the signed-in account when either is available. Ask for them only when they are not. Do not confirm them separately: they appear in the confirmation summary, because the email is the only channel the pipeline has back to the rep.
+5. Every question costs the rep a turn. Ask every question you still need, including the skill and the rep's name or email, together in one message, never one per turn. Do not force the rep to repeat facts that are already clear. Suggested direction, evidence, and reproducibility are useful but not required when the issue is already actionable, so do not ask for them then.
+6. Classify the feedback as one of: `incorrect-behavior`, `missing-step`, `unclear-instruction`, `tool-failure`, `output-quality`, `workflow-friction`, `permissions-or-security`, or `enhancement`.
+7. Preserve uncertainty. Distinguish what the rep observed from what you infer. Do not invent a root cause.
+8. Redact sensitive content before rendering. Replace it with neutral descriptions such as `[customer]`, `[deal]`, `[amount]`, or `[private link omitted]`. Tell the rep what was redacted. The pipeline runs its own privacy screen and holds anything it flags for the owner, so do not rely on it to catch what you can see.
 
 ## Render the record
 
 Fill the template from the reference completely, omitting optional sections that would be empty. Write a one-line summary that fits in a Slack message and starts with the skill name's effect, for example `SPICED table missing on calls over 30 minutes`.
 
-## Confirm, then submit
+## Confirm once, then submit
 
-The pipeline files feedback as a public GitHub issue, so a named human must attest that the record is clean before it leaves the machine. That attestation used to be a checkbox on a form. Now it is the rep saying yes to you, and you may not supply it on their behalf.
+The pipeline files feedback as a public GitHub issue, so a named human must attest that the record is clean before it leaves the machine. That attestation is the rep saying yes to you, and you may not supply it on their behalf. It is the only confirmation this skill asks for, so put everything the rep needs to check into that one message.
 
-1. Show the rep the complete record and tell them plainly what you redacted.
-2. Ask them to confirm two things in one answer: that the record is what they want submitted, and that it contains no customer names, deal data, call transcripts, private links, or credentials.
+1. Show the rep the complete record, preceded by the affected skill, the one-line summary, and their name and email in bold so a wrong address is caught here. Tell them plainly what you redacted.
+2. In the same message, ask them to reply yes to confirm two things: that the record is what they want submitted, and that it contains no customer names, deal data, call transcripts, private links, or credentials.
 3. Only after they confirm both, post the submission as described in [references/submitting.md](references/submitting.md), with `submission_type` set to `Feedback about an existing skill` and `skill` set to the skill's folder name.
-4. Never alter the record after they confirm it. If anything needs to change, show the new record and ask again.
+4. If their reply corrects only the name, email, or summary, apply the correction and submit without asking again; those are not part of the record. Never alter the record after they confirm it. If the record or the affected skill must change, show the new version and ask again.
 5. Report the HTTP status, then tell them to watch for the pipeline's Slack DM, which carries the tracking link and is the real receipt.
 
 If a stopping condition in the submitting reference applies, give them the form link and the field values instead, and say why you could not post it for them.
