@@ -1,6 +1,6 @@
 # Marq Sales Plugins
 
-Public plugin marketplace for the Marq sales team. It contains one plugin (`marq-sales-suite`) with nine skills, packaged for both Claude Code and Codex.
+Public plugin marketplace for the Marq sales team. It contains one plugin (`marq-sales-suite`) with ten skills, packaged for both Claude Code and Codex.
 
 The source is publicly readable for installation and inspection. It remains unlicensed; public availability does not grant permission to copy, modify, or redistribute it.
 
@@ -8,6 +8,7 @@ The source is publicly readable for installation and inspection. It remains unli
 
 - **mql-to-sqo** — Converts an existing HubSpot MQL deal into an SQO: Gong-backed qualification fields, product-library line items, synchronized deal amount. Every CRM write requires explicit approval of an exact proposal.
 - **audit-hubspot-pipeline** — Audits a rep's full open Sales Pipeline, corroborates next steps against HubSpot activities, Google Calendar, and Gong, and scores every deal green/yellow/red with a deterministic Python scorer. Scheduled runs are always read-only; repairs are append-only and approval-gated.
+- **missing-hubspot-deal-audit** — Audits a rep's external demos, discovery calls, and other buying conversations over a date range to find conversations with no corresponding HubSpot deal, while leaving the CRM unchanged. Invoke it as `@missing-hubspot-deal-audit` in ChatGPT or `$missing-hubspot-deal-audit` in Codex.
 - **marq-discovery-planner** — Finds the relevant HubSpot record from a deal or account name and prepares a focused, evidence-grounded discovery strategy with a meeting objective, target exit decision, prioritized questions, and conditional Marq proof. Invoke it as `@marq-discovery-planner` in ChatGPT or `$marq-discovery-planner` in Codex.
 - **marq-deal-acceleration** — Finds one active opportunity from a deal or account name, diagnoses its evidence-supported stage, customer momentum, qualification, stakeholder coverage, close-date credibility, and forecast risk, then recommends no more than two high-leverage actions. It is read-only and proposes CRM corrections without applying them. Invoke it as `@marq-deal-acceleration` in ChatGPT or `$marq-deal-acceleration` in Codex.
 - **marq-post-call-execution** — Turns a completed call into an evidence-tagged deal summary, qualification and stakeholder assessment, commitment record, next-step plan, proposed HubSpot changes, and grounded customer follow-up. CRM writes and external communication remain approval-gated. Invoke it as `@marq-post-call-execution` in ChatGPT or `$marq-post-call-execution` in Codex.
@@ -18,7 +19,7 @@ The source is publicly readable for installation and inspection. It remains unli
 
 ## Prerequisites
 
-Connected and authorized as required by the selected workflow: **HubSpot**, **Gong**, **Google Calendar**, **Brandfetch**, **Marq**, and **Marq Analytics**. The discovery planner and post-call execution workflows require HubSpot access when CRM context is requested; post-call execution also requires a transcript or substantive notes. The marq-deal-acceleration skill requires HubSpot deal access, uses Gong when matched calls are available, and requires Python to run its deterministic momentum classifier. The mql-to-sqo skill also needs a browser tool signed into the HubSpot portal for line-item rebuilds. The plugin-feedback and upload-new-skill workflows need no connectors; they package the submission and post it to the contribution pipeline themselves (see [CONTRIBUTING.md](CONTRIBUTING.md)).
+Connected and authorized as required by the selected workflow: **HubSpot**, **Gong**, **Google Calendar**, **Brandfetch**, **Marq**, and **Marq Analytics**. The discovery planner and post-call execution workflows require HubSpot access when CRM context is requested; post-call execution also requires a transcript or substantive notes. The missing-hubspot-deal-audit skill requires authenticated, read-only HubSpot access to meetings, companies, contacts, and deals, and uses a call-recording connector such as Gong when available. The marq-deal-acceleration skill requires HubSpot deal access, uses Gong when matched calls are available, and requires Python to run its deterministic momentum classifier. The mql-to-sqo skill also needs a browser tool signed into the HubSpot portal for line-item rebuilds. The plugin-feedback and upload-new-skill workflows need no connectors; they package the submission and post it to the contribution pipeline themselves (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
 ## Contributing
 
